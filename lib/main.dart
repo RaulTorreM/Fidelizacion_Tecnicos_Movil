@@ -16,20 +16,24 @@ class LoginPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFF6A1B9A), // Color de fondo púrpura
+      backgroundColor: Color.fromARGB(255, 36, 31, 61), // Color de fondo púrpura
       body: Padding(
         padding: EdgeInsets.all(20),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             // Logo
-            Icon(Icons.whatshot, size: 100, color: Colors.orangeAccent), // Puedes usar un icono de fuego
+            Image.asset(
+              "lib\icons\logo_png.png",
+              width: 100,
+              height: 100,
+            ),
 
             SizedBox(height: 20),
 
             // Título
             Text(
-              'Login to Start',
+              'Iniciar Sesión',
               style: TextStyle(
                 fontSize: 24,
                 color: Colors.white,
@@ -41,7 +45,7 @@ class LoginPage extends StatelessWidget {
 
             // Subtítulo
             Text(
-              'Test your app development knowledge with quick bite-sized quizzes.',
+              'Test.',
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 16,
@@ -58,7 +62,7 @@ class LoginPage extends StatelessWidget {
               },
               icon: Icon(Icons.g_mobiledata, color: Colors.white),
               label: Text(
-                'Login with Google',
+                'Ingresar Sus Credenciales',
                 style: TextStyle(color: Colors.white),
               ),
               style: ElevatedButton.styleFrom(
@@ -79,7 +83,7 @@ class LoginPage extends StatelessWidget {
               },
               icon: Icon(Icons.apple, color: Colors.white),
               label: Text(
-                'Sign in with Apple',
+                '---',
                 style: TextStyle(color: Colors.white),
               ),
               style: ElevatedButton.styleFrom(
@@ -99,7 +103,7 @@ class LoginPage extends StatelessWidget {
                 // Acción para continuar como invitado
               },
               child: Text(
-                'Continue as Guest',
+                'Olvidó su contraseña?',
                 style: TextStyle(color: Colors.white70),
               ),
             ),
