@@ -6,6 +6,15 @@ part of 'api_service.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
+CsrfResponse _$CsrfResponseFromJson(Map<String, dynamic> json) => CsrfResponse(
+      csrf_token: json['csrf_token'] as String,
+    );
+
+Map<String, dynamic> _$CsrfResponseToJson(CsrfResponse instance) =>
+    <String, dynamic>{
+      'csrf_token': instance.csrf_token,
+    };
+
 LoginRequest _$LoginRequestFromJson(Map<String, dynamic> json) => LoginRequest(
       idTecnico: json['idTecnico'] as String,
       password: json['password'] as String,
@@ -50,7 +59,7 @@ class _ApiService implements ApiService {
     this._dio, {
     this.baseUrl,
   }) {
-    baseUrl ??= 'http://192.168.0.15/FidelizacionTecnicos/public/';
+    baseUrl ??= 'http://192.168.0.15/FidelizacionTecnicos/public/api/';
   }
 
   final Dio _dio;
@@ -58,7 +67,34 @@ class _ApiService implements ApiService {
   String? baseUrl;
 
   @override
-  Future<LoginResponse> login(LoginRequest loginRequest) async {
+  Future<CsrfResponse> getCsrfToken() async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    final Map<String, dynamic>? _data = null;
+    final _result = await _dio
+        .fetch<Map<String, dynamic>>(_setStreamType<CsrfResponse>(Options(
+      method: 'GET',
+      headers: _headers,
+      extra: _extra,
+    )
+            .compose(
+              _dio.options,
+              'csrf-token',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(
+                baseUrl: _combineBaseUrls(
+              _dio.options.baseUrl,
+              baseUrl,
+            ))));
+    final value = CsrfResponse.fromJson(_result.data!);
+    return value;
+  }
+
+  @override
+  Future<LoginResponse> loginTecnico(LoginRequest loginRequest) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};

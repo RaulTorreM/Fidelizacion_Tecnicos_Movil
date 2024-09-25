@@ -6,29 +6,36 @@ import 'dart:io';
 
 part 'api_service.g.dart';
 
-@RestApi(baseUrl: "http://192.168.0.15/FidelizacionTecnicos/public/")
+@RestApi(baseUrl: "http://192.168.0.15/FidelizacionTecnicos/public/api/")
 abstract class ApiService {
   factory ApiService(Dio dio, {String baseUrl}) = _ApiService;
 
   static ApiService create() {
     final dio = Dio();
+
+
     dio.options.connectTimeout = Duration(seconds: 5);
     dio.options.receiveTimeout = Duration(seconds: 3);
-
-    // Desactivar la verificación de certificados (solo para desarrollo)
-    (dio.httpClientAdapter as IOHttpClientAdapter).onHttpClientCreate = (HttpClient client) {
-      client.badCertificateCallback = (X509Certificate cert, String host, int port) => true;
-      return client;
-    };
-
     return ApiService(dio);
   }
 
+  @GET("csrf-token")
+  Future<CsrfResponse> getCsrfToken();
+
   @POST("/loginmovil/login-tecnico")
-  Future<LoginResponse> login(@Body() LoginRequest loginRequest);
+  Future<LoginResponse> loginTecnico(@Body() LoginRequest loginRequest);
 
   @GET("/loginmovil/login-DataTecnico")
   Future<List<Tecnico>> getAllTecnicos();
+}
+
+@JsonSerializable()
+class CsrfResponse {
+  String csrf_token;
+
+  CsrfResponse({required this.csrf_token});
+
+  factory CsrfResponse.fromJson(Map<String, dynamic> json) => _$CsrfResponseFromJson(json);
 }
 
 @JsonSerializable()
