@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import '../../api_connection/api_service.dart';
 import 'temporal_page.dart';
-import 'dart:convert'; 
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -22,7 +21,7 @@ class _LoginPageState extends State<LoginPage> {
       try {
         // Crear el objeto de solicitud de inicio de sesión
         final loginRequest = LoginRequest(
-          idTecnico: _dniController.text,
+          celularTecnico: _dniController.text, 
           password: _passwordController.text,
         );
 
@@ -31,7 +30,7 @@ class _LoginPageState extends State<LoginPage> {
 
         if (response.status == 'success') {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Bienvenido, ${response.idTecnico}')),
+            SnackBar(content: Text('Bienvenido, ${response.nombreTecnico}')),
           );
           // Aquí puedes navegar a la siguiente pantalla después del login exitoso
           Navigator.push(

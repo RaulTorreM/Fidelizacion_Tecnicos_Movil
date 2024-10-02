@@ -16,13 +16,13 @@ Map<String, dynamic> _$CsrfResponseToJson(CsrfResponse instance) =>
     };
 
 LoginRequest _$LoginRequestFromJson(Map<String, dynamic> json) => LoginRequest(
-      idTecnico: json['idTecnico'] as String,
+      celularTecnico: json['celularTecnico'] as String,
       password: json['password'] as String,
     );
 
 Map<String, dynamic> _$LoginRequestToJson(LoginRequest instance) =>
     <String, dynamic>{
-      'idTecnico': instance.idTecnico,
+      'celularTecnico': instance.celularTecnico,
       'password': instance.password,
     };
 
@@ -30,22 +30,24 @@ LoginResponse _$LoginResponseFromJson(Map<String, dynamic> json) =>
     LoginResponse(
       status: json['status'] as String,
       message: json['message'] as String,
-      idTecnico: json['idTecnico'] as String?,
+      celularTecnico: json['celularTecnico'] as String?,
+      nombreTecnico: json['nombreTecnico'] as String?,
     );
 
 Map<String, dynamic> _$LoginResponseToJson(LoginResponse instance) =>
     <String, dynamic>{
       'status': instance.status,
       'message': instance.message,
-      'idTecnico': instance.idTecnico,
+      'celularTecnico': instance.celularTecnico,
+      'nombreTecnico': instance.nombreTecnico,
     };
 
 Tecnico _$TecnicoFromJson(Map<String, dynamic> json) => Tecnico(
-      idTecnico: json['idTecnico'] as String,
+      celularTecnico: json['celularTecnico'] as String,
     );
 
 Map<String, dynamic> _$TecnicoToJson(Tecnico instance) => <String, dynamic>{
-      'idTecnico': instance.idTecnico,
+      'celularTecnico': instance.celularTecnico,
     };
 
 // **************************************************************************

@@ -1,8 +1,6 @@
 import 'package:retrofit/retrofit.dart';
 import 'package:dio/dio.dart';
 import 'package:json_annotation/json_annotation.dart';
-import 'package:dio/io.dart';
-import 'dart:io';
 
 part 'api_service.g.dart';
 
@@ -40,10 +38,10 @@ class CsrfResponse {
 
 @JsonSerializable()
 class LoginRequest {
-  String idTecnico;
+  String celularTecnico;
   String password;
 
-  LoginRequest({required this.idTecnico, required this.password});
+   LoginRequest({required this.celularTecnico, required this.password});
 
   factory LoginRequest.fromJson(Map<String, dynamic> json) => _$LoginRequestFromJson(json);
   Map<String, dynamic> toJson() => _$LoginRequestToJson(this);
@@ -53,9 +51,11 @@ class LoginRequest {
 class LoginResponse {
   String status;
   String message;
-  String? idTecnico;
+  String? celularTecnico;
+  String? nombreTecnico;
 
-  LoginResponse({required this.status, required this.message, this.idTecnico});
+
+  LoginResponse({required this.status, required this.message, this.celularTecnico, this.nombreTecnico});
 
   factory LoginResponse.fromJson(Map<String, dynamic> json) => _$LoginResponseFromJson(json);
   Map<String, dynamic> toJson() => _$LoginResponseToJson(this);
@@ -63,9 +63,9 @@ class LoginResponse {
 
 @JsonSerializable()
 class Tecnico {
-  String idTecnico;
+  String celularTecnico; // Cambiado de idTecnico a celularTecnico
 
-  Tecnico({required this.idTecnico});
+  Tecnico({required this.celularTecnico}); // Actualizado el constructor
 
   factory Tecnico.fromJson(Map<String, dynamic> json) => _$TecnicoFromJson(json);
   Map<String, dynamic> toJson() => _$TecnicoToJson(this);

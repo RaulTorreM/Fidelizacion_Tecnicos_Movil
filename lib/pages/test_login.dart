@@ -24,7 +24,7 @@ class TestLoginPage extends StatelessWidget {
       final csrfToken = csrfResponse.csrf_token;
 
       final loginRequest = LoginRequest(
-        idTecnico: "77665544",
+        celularTecnico: "999888777",
         password: "contraseña123",
       );
 
