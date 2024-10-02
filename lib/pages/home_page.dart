@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'login_page.dart';
+import '../util/background_painter.dart'; // Importa el CustomPainter
 
 class HomePage extends StatelessWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -9,12 +10,10 @@ class HomePage extends StatelessWidget {
     return Scaffold(
       body: Stack(
         children: [
-          // Fondo GIF
-          Positioned.fill(
-            child: Image.asset(
-              "assets/others/background_JD.gif",
-              fit: BoxFit.cover,
-            ),
+          // Fondo con CustomPainter
+          CustomPaint(
+            size: Size.infinite,
+            painter: BackgroundPainter(),
           ),
           // Contenido
           Padding(

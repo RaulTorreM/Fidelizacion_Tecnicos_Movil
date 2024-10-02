@@ -30,24 +30,64 @@ LoginResponse _$LoginResponseFromJson(Map<String, dynamic> json) =>
     LoginResponse(
       status: json['status'] as String,
       message: json['message'] as String,
-      celularTecnico: json['celularTecnico'] as String?,
-      nombreTecnico: json['nombreTecnico'] as String?,
+      tecnico: json['tecnico'] == null
+          ? null
+          : Tecnico.fromJson(json['tecnico'] as Map<String, dynamic>),
     );
 
 Map<String, dynamic> _$LoginResponseToJson(LoginResponse instance) =>
     <String, dynamic>{
       'status': instance.status,
       'message': instance.message,
-      'celularTecnico': instance.celularTecnico,
-      'nombreTecnico': instance.nombreTecnico,
+      'tecnico': instance.tecnico,
     };
 
 Tecnico _$TecnicoFromJson(Map<String, dynamic> json) => Tecnico(
+      idTecnico: json['idTecnico'] as String,
       celularTecnico: json['celularTecnico'] as String,
+      nombreTecnico: json['nombreTecnico'] as String,
+      fechaNacimientoTecnico: json['fechaNacimientoTecnico'] as String,
+      puntosTecnico: (json['puntosTecnico'] as num).toInt(),
+      historicoPuntosTecnico: (json['historicoPuntosTecnico'] as num).toInt(),
+      rangoTecnico: json['rangoTecnico'] as String,
     );
 
 Map<String, dynamic> _$TecnicoToJson(Tecnico instance) => <String, dynamic>{
+      'idTecnico': instance.idTecnico,
       'celularTecnico': instance.celularTecnico,
+      'nombreTecnico': instance.nombreTecnico,
+      'fechaNacimientoTecnico': instance.fechaNacimientoTecnico,
+      'puntosTecnico': instance.puntosTecnico,
+      'historicoPuntosTecnico': instance.historicoPuntosTecnico,
+      'rangoTecnico': instance.rangoTecnico,
+    };
+
+VentaIntermediada _$VentaIntermediadaFromJson(Map<String, dynamic> json) =>
+    VentaIntermediada(
+      idVentaIntermediada: json['idVentaIntermediada'] as String,
+      idTecnico: json['idTecnico'] as String,
+      nombreCliente: json['nombreCliente'] as String,
+      tipoCodigoCliente: json['tipoCodigoCliente'] as String,
+      codigoCliente: json['codigoCliente'] as String,
+      fechaHoraEmision: DateTime.parse(json['fechaHoraEmision'] as String),
+      fechaHoraCargada: DateTime.parse(json['fechaHoraCargada'] as String),
+      montoTotal: (json['montoTotal'] as num).toDouble(),
+      puntosGanados: (json['puntosGanados'] as num).toInt(),
+      estado: json['estado'] as String,
+    );
+
+Map<String, dynamic> _$VentaIntermediadaToJson(VentaIntermediada instance) =>
+    <String, dynamic>{
+      'idVentaIntermediada': instance.idVentaIntermediada,
+      'idTecnico': instance.idTecnico,
+      'nombreCliente': instance.nombreCliente,
+      'tipoCodigoCliente': instance.tipoCodigoCliente,
+      'codigoCliente': instance.codigoCliente,
+      'fechaHoraEmision': instance.fechaHoraEmision.toIso8601String(),
+      'fechaHoraCargada': instance.fechaHoraCargada.toIso8601String(),
+      'montoTotal': instance.montoTotal,
+      'puntosGanados': instance.puntosGanados,
+      'estado': instance.estado,
     };
 
 // **************************************************************************
@@ -148,6 +188,37 @@ class _ApiService implements ApiService {
             ))));
     var value = _result.data!
         .map((dynamic i) => Tecnico.fromJson(i as Map<String, dynamic>))
+        .toList();
+    return value;
+  }
+
+  @override
+  Future<List<VentaIntermediada>> getVentasIntermediadas(
+      String idTecnico) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    final Map<String, dynamic>? _data = null;
+    final _result = await _dio
+        .fetch<List<dynamic>>(_setStreamType<List<VentaIntermediada>>(Options(
+      method: 'GET',
+      headers: _headers,
+      extra: _extra,
+    )
+            .compose(
+              _dio.options,
+              '/ventas-intermediadas/${idTecnico}',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(
+                baseUrl: _combineBaseUrls(
+              _dio.options.baseUrl,
+              baseUrl,
+            ))));
+    var value = _result.data!
+        .map((dynamic i) =>
+            VentaIntermediada.fromJson(i as Map<String, dynamic>))
         .toList();
     return value;
   }

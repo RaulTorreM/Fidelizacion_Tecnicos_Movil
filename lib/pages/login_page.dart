@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import '../../api_connection/api_service.dart';
 import 'temporal_page.dart';
+import '../util/background_painter.dart'; // Importa el CustomPainter
+import 'menu_page.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -12,7 +14,7 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
-  final _dniController = TextEditingController();
+  final _numTelefonoController = TextEditingController();
   final _passwordController = TextEditingController();
   final ApiService _apiService = ApiService.create();
 
@@ -21,7 +23,7 @@ class _LoginPageState extends State<LoginPage> {
       try {
         // Crear el objeto de solicitud de inicio de sesión
         final loginRequest = LoginRequest(
-          celularTecnico: _dniController.text, 
+          celularTecnico: _numTelefonoController.text, 
           password: _passwordController.text,
         );
 
@@ -30,12 +32,13 @@ class _LoginPageState extends State<LoginPage> {
 
         if (response.status == 'success') {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Bienvenido, ${response.nombreTecnico}')),
+            SnackBar(content: Text('Bienvenido, ${response.tecnico!.nombreTecnico}')),
           );
-          // Aquí puedes navegar a la siguiente pantalla después del login exitoso
+
+          // Navegar a la página siguiente
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => const temporal_page()),
+            MaterialPageRoute(builder: (context) => MenuPage(tecnico: response.tecnico!)),
           );
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -92,16 +95,14 @@ class _LoginPageState extends State<LoginPage> {
             Navigator.pop(context); // Regresar a HomePage
           },
         ),
-        backgroundColor: Colors.black.withOpacity(1),
+        backgroundColor: Color(0xFF021526), // Color de la AppBar
       ),
       body: Stack(
         children: [
-          // Fondo GIF
-          Positioned.fill(
-            child: Image.asset(
-              "assets/others/background_JD.gif",
-              fit: BoxFit.cover,
-            ),
+          // Fondo con triángulos
+          CustomPaint(
+            size: Size.infinite,
+            painter: BackgroundPainter(),
           ),
           // Contenido
           Padding(
@@ -128,7 +129,7 @@ class _LoginPageState extends State<LoginPage> {
                     'Iniciar Sesión',
                     style: TextStyle(
                       fontSize: 24,
-                      color: Colors.white,
+                      color: Color(0xFFE2E2B6), // Color del texto
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -137,21 +138,21 @@ class _LoginPageState extends State<LoginPage> {
 
                   // Formulario de inicio de sesión
                   TextFormField(
-                    controller: _dniController,
+                    controller: _numTelefonoController,
                     decoration: InputDecoration(
-                      labelText: 'DNI',
+                      labelText: 'Teléfono',
                       filled: true,
-                      fillColor: Colors.black.withOpacity(0.8), // Color oscuro
-                      labelStyle: TextStyle(color: Colors.white), // Color de la etiqueta
+                      fillColor: Color(0xFF03346E), // Color de fondo del campo
+                      labelStyle: TextStyle(color: Color(0xFFE2E2B6)), // Color de la etiqueta
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide(color: Colors.white), // Borde blanco
+                        borderSide: BorderSide(color: Color(0xFFE2E2B6)), // Borde claro
                       ),
                     ),
-                    style: TextStyle(color: Colors.white), // Color del texto
+                    style: TextStyle(color: Color(0xFFE2E2B6)), // Color del texto
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Por favor ingrese su DNI';
+                        return 'Por favor ingrese su Teléfono';
                       }
                       return null;
                     },
@@ -162,15 +163,15 @@ class _LoginPageState extends State<LoginPage> {
                     decoration: InputDecoration(
                       labelText: 'Contraseña',
                       filled: true,
-                      fillColor: Colors.black.withOpacity(0.8), // Color oscuro
-                      labelStyle: TextStyle(color: Colors.white), // Color de la etiqueta
+                      fillColor: Color(0xFF03346E), // Color de fondo del campo
+                      labelStyle: TextStyle(color: Color(0xFFE2E2B6)), // Color de la etiqueta
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide(color: Colors.white), // Borde blanco
+                        borderSide: BorderSide(color: Color(0xFFE2E2B6)), // Borde claro
                       ),
                     ),
                     obscureText: true,
-                    style: TextStyle(color: Colors.white), // Color del texto
+                    style: TextStyle(color: Color(0xFFE2E2B6)), // Color del texto
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'Por favor ingrese su contraseña';
@@ -183,7 +184,7 @@ class _LoginPageState extends State<LoginPage> {
                     onPressed: _login,
                     child: Text('Ingresar'),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color.fromARGB(151, 2, 1, 46), // Color más claro
+                      backgroundColor: Color.fromARGB(255, 4, 26, 43), // Color del botón
                       minimumSize: const Size(double.infinity, 50),
                       foregroundColor: Colors.white, // Color del texto
                     ),
@@ -191,7 +192,10 @@ class _LoginPageState extends State<LoginPage> {
                   const SizedBox(height: 16),
                   ElevatedButton(
                     onPressed: _testApiConnection, // Acción para probar la conexión API
-                    child: Text('Probar Conexión API')
+                    child: Text('Probar Conexión API', style: TextStyle(color: Color(0xFF021526))), // Color del texto
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Color(0xFFE2E2B6), // Color del botón
+                    ),
                   ),
                 ],
               ),
