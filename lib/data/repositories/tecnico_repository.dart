@@ -39,13 +39,19 @@ class TecnicoRepository {
     }
   }
 
-  // Método para obtener detalles de un técnico específico
+ 
+   // Método para obtener detalles de un técnico específico
   Future<Tecnico> obtenerTecnicoPorId(String idTecnico) async {
-    try {
-      final response = await _apiService.obtenerTecnicoPorId(idTecnico);
-      return response;
-    } catch (e) {
-      throw Exception('Error al obtener detalles del técnico: $e');
-    }
+  try {
+    final tecnico = await _apiService.obtenerTecnicoPorId(idTecnico);
+    print("Datos del técnico obtenidos desde el repositorio: ${tecnico.toJson()}");
+    return tecnico;
+  } catch (e) {
+    print("Error en el repositorio al obtener el técnico: $e");
+    rethrow;
   }
+}
+
+
+
 }

@@ -4,36 +4,44 @@ part 'tecnico.g.dart';
 
 @JsonSerializable()
 class Tecnico {
+  @JsonKey(name: 'idTecnico')
   final String idTecnico;
+
+  @JsonKey(name: 'nombreTecnico')
   final String nombreTecnico;
+
+  @JsonKey(name: 'celularTecnico')
   final String celularTecnico;
+
+  @JsonKey(name: 'oficioTecnico')
   final String oficioTecnico;
-  final String fechaNacimientoTecnico;
-  final int totalPuntosActualesTecnico;
-  final int historicoPuntosTecnico;
-  final String rangoTecnico;
+
+  @JsonKey(name: 'fechaNacimiento_Tecnico')
+  final String? fechaNacimientoTecnico; // Cambiado el nombre de la clave
+
+  @JsonKey(name: 'totalPuntosActuales_Tecnico')
+  final int totalPuntosActualesTecnico; // Cambiado el nombre de la clave
+
+  @JsonKey(name: 'historicoPuntos_Tecnico')
+  final int historicoPuntosTecnico; // Cambiado el nombre de la clave
+
+  @JsonKey(name: 'rangoTecnico')
+  final String? rangoTecnico; // Campo opcional
 
   Tecnico({
     required this.idTecnico,
     required this.nombreTecnico,
     required this.celularTecnico,
     required this.oficioTecnico,
-    required this.fechaNacimientoTecnico,
+    this.fechaNacimientoTecnico, // Campo opcional
     required this.totalPuntosActualesTecnico,
     required this.historicoPuntosTecnico,
-    required this.rangoTecnico,
+    this.rangoTecnico, // Campo opcional
   });
 
-  factory Tecnico.fromJson(Map<String, dynamic> json) {
-    return Tecnico(
-      idTecnico: json['idTecnico'],
-      nombreTecnico: json['nombreTecnico'],
-      celularTecnico: json['celularTecnico'],
-      oficioTecnico: json['oficioTecnico'],
-      fechaNacimientoTecnico: json['fechaNacimiento_Tecnico'],
-      totalPuntosActualesTecnico: json['totalPuntosActuales_Tecnico'],
-      historicoPuntosTecnico: json['historicoPuntos_Tecnico'],
-      rangoTecnico: json['rangoTecnico'],
-    );
-  }
+  // Método para deserializar el JSON
+  factory Tecnico.fromJson(Map<String, dynamic> json) => _$TecnicoFromJson(json);
+
+  // Método para serializar el objeto a JSON
+  Map<String, dynamic> toJson() => _$TecnicoToJson(this);
 }

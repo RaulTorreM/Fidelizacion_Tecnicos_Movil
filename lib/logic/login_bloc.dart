@@ -1,4 +1,4 @@
-// lib/logic/login_bloc.dart
+
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -23,6 +23,7 @@ class LoginBloc with ChangeNotifier {
     String? get error => _error;
     bool get isLoading => _isLoading;
 
+    
     // Método de login
     Future<void> login(String celular, String password) async {
       _isLoading = true; // Indica que está en proceso de carga
@@ -30,8 +31,13 @@ class LoginBloc with ChangeNotifier {
 
       try {
         final response = await Dio().post('http://192.168.0.15/FidelizacionTecnicos/public/api/loginmovil/login-tecnico', data: {
-          'celularTecnico': celular,
-          'password': password,
+          'celularTecnico': '964866527',
+          'password': 'contraseña123',
+          
+          
+          // 'celularTecnico': celular,
+          // 'password': password,
+
         });
 
         print('Login Response: ${response.data}'); // Imprimir respuesta para depuración
@@ -50,15 +56,16 @@ class LoginBloc with ChangeNotifier {
       }
     }
 
-      Future<void> obtenerDetallesTecnico(String idTecnico) async {
+     Future<void> obtenerDetallesTecnico(String idTecnico) async {
       try {
         final response = await Dio().get('http://192.168.0.15/FidelizacionTecnicos/public/api/getTecnico/$idTecnico');
         print('Detalles del Técnico: ${response.data}'); // Imprimir respuesta para depuración
 
         if (response.data['tecnico'] != null) {
           _tecnico = Tecnico.fromJson(response.data['tecnico']);
+          
         } else {
-          _error = 'Error al obtener detalles del técnico';
+          _error = 'Error al obtener detalles del técnico: Datos no encontrados';
         }
       } catch (e) {
         _error = 'Error al obtener detalles del técnico: ${e.toString()}';
@@ -66,15 +73,12 @@ class LoginBloc with ChangeNotifier {
       notifyListeners(); // Notifica a los oyentes después de cambiar el estado
     }
 
-    
 
     void clear() {
       _tecnico = null;
       _error = null;
       notifyListeners();
     }
-  
-
 
 
 

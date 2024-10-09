@@ -31,9 +31,9 @@ class ProfilePage extends StatelessWidget {
             // Información del Técnico
             _buildInfoCard('ID Técnico', tecnico.idTecnico),
             _buildInfoCard('Celular', tecnico.celularTecnico),
-            _buildInfoCard('Rango', tecnico.rangoTecnico),
+            _buildInfoCard('Rango', tecnico.rangoTecnico!),
             _buildInfoCard('Puntos Totales', '${tecnico.totalPuntosActualesTecnico}'),
-            _buildInfoCard('Fecha de Nacimiento', tecnico.fechaNacimientoTecnico),
+            _buildInfoCard('Fecha de Nacimiento', tecnico.fechaNacimientoTecnico!),
             _buildInfoCard('Histórico de Puntos', '${tecnico.historicoPuntosTecnico}'),
 
             const SizedBox(height: 20),

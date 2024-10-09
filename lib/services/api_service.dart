@@ -6,6 +6,7 @@ import '../data/models/login_response.dart' ;
 import '../data/models/tecnico.dart' ;
 import '../data/models/venta_intermediada.dart';
 import '../data/models/csrf_response.dart';
+import '../data/models/recompensa.dart';
 
 part 'api_service.g.dart'; // Asegúrate de tener el archivo generado
 
@@ -40,6 +41,11 @@ abstract class ApiService {
 
   @GET("/getTecnico/{idTecnico}")
   Future<Tecnico> obtenerTecnicoPorId(@Path("idTecnico") String idTecnico);
+
+  @GET("/recompensas")
+  Future<List<Recompensa>> obtenerRecompensas();
+
+
 }
 
 final ApiService _apiService = ApiService.create();

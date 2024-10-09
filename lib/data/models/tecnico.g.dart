@@ -11,11 +11,11 @@ Tecnico _$TecnicoFromJson(Map<String, dynamic> json) => Tecnico(
       nombreTecnico: json['nombreTecnico'] as String,
       celularTecnico: json['celularTecnico'] as String,
       oficioTecnico: json['oficioTecnico'] as String,
-      fechaNacimientoTecnico: json['fechaNacimientoTecnico'] as String,
+      fechaNacimientoTecnico: json['fechaNacimiento_Tecnico'] as String?,
       totalPuntosActualesTecnico:
-          (json['totalPuntosActualesTecnico'] as num).toInt(),
-      historicoPuntosTecnico: (json['historicoPuntosTecnico'] as num).toInt(),
-      rangoTecnico: json['rangoTecnico'] as String,
+          (json['totalPuntosActuales_Tecnico'] as num).toInt(),
+      historicoPuntosTecnico: (json['historicoPuntos_Tecnico'] as num).toInt(),
+      rangoTecnico: json['rangoTecnico'] as String?,
     );
 
 Map<String, dynamic> _$TecnicoToJson(Tecnico instance) => <String, dynamic>{
@@ -23,8 +23,8 @@ Map<String, dynamic> _$TecnicoToJson(Tecnico instance) => <String, dynamic>{
       'nombreTecnico': instance.nombreTecnico,
       'celularTecnico': instance.celularTecnico,
       'oficioTecnico': instance.oficioTecnico,
-      'fechaNacimientoTecnico': instance.fechaNacimientoTecnico,
-      'totalPuntosActualesTecnico': instance.totalPuntosActualesTecnico,
-      'historicoPuntosTecnico': instance.historicoPuntosTecnico,
+      'fechaNacimiento_Tecnico': instance.fechaNacimientoTecnico,
+      'totalPuntosActuales_Tecnico': instance.totalPuntosActualesTecnico,
+      'historicoPuntos_Tecnico': instance.historicoPuntosTecnico,
       'rangoTecnico': instance.rangoTecnico,
     };
