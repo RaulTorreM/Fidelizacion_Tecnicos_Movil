@@ -1,18 +1,24 @@
 import 'package:flutter/material.dart';
-import 'profile_page.dart'; // Importa la nueva página de perfil
-import '../api_connection/api_service.dart'; // Importa tu servicio API
+import 'profile_page.dart'; 
 import 'historialVentas_page.dart';
+import '../../data/models/tecnico.dart';
+import 'package:provider/provider.dart';
+import '../../logic/login_bloc.dart'; // Asegúrate de importar tu LoginBloc
 
 class MenuPage extends StatelessWidget {
-  final Tecnico tecnico; // Añadido
+  
+  final Tecnico tecnico;  // Ya recibes el técnico aquí
 
   const MenuPage({Key? key, required this.tecnico}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+
+
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Menú'),
+        title: Text('Bienvenido, ${tecnico.nombreTecnico}'),
       ),
       drawer: Drawer(
         child: ListView(
@@ -34,13 +40,10 @@ class MenuPage extends StatelessWidget {
               title: const Text('Ver Perfil'),
               onTap: () async {
                 Navigator.pop(context);
-                // Navegar a la página de perfil
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => ProfilePage(
-                      tecnico: tecnico, // Pasar el objeto Tecnico completo
-                    ),
+                    builder: (context) => ProfilePage(tecnico: tecnico), // Pasar el objeto Tecnico
                   ),
                 );
               },
@@ -52,7 +55,7 @@ class MenuPage extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => HistorialVentasPage(idTecnico: tecnico.idTecnico), // Pasar el idTecnico
+                    builder: (context) => HistorialVentasPage(idTecnico: tecnico.idTecnico),
                   ),
                 );
               },
@@ -60,14 +63,11 @@ class MenuPage extends StatelessWidget {
             ListTile(
               title: const Text('Historial de Canjes'),
               onTap: () {
-                // Navegar a la página de historial de canjes
                 Navigator.pop(context);
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => ProfilePage(
-                      tecnico: tecnico, // Pasar el objeto Tecnico completo
-                    ),
+                    builder: (context) => ProfilePage(tecnico: tecnico),
                   ),
                 );
               },
@@ -78,37 +78,33 @@ class MenuPage extends StatelessWidget {
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: GridView.count(
-          crossAxisCount: 2, // Dos botones por fila
+          crossAxisCount: 2,
           crossAxisSpacing: 20,
           mainAxisSpacing: 20,
           children: [
             _buildMenuButton(context, 'Ver Perfil', Icons.person, () {
               Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => ProfilePage(
-                      tecnico: tecnico, // Pasar el objeto Tecnico completo
-                    ),
-                  ),
-                );
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ProfilePage(tecnico: tecnico),
+                ),
+              );
             }),
             _buildMenuButton(context, 'Historial de Ventas Intermediadas', Icons.history, () {
               Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => HistorialVentasPage(idTecnico: tecnico.idTecnico), // Pasar el idTecnico
-                  ),
-                );
+                context,
+                MaterialPageRoute(
+                  builder: (context) => HistorialVentasPage(idTecnico: tecnico.idTecnico),
+                ),
+              );
             }),
             _buildMenuButton(context, 'Historial de Canjes', Icons.swap_horiz, () {
               Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => ProfilePage(
-                      tecnico: tecnico, // Pasar el objeto Tecnico completo
-                    ),
-                  ),
-                );
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ProfilePage(tecnico: tecnico),
+                ),
+              );
             }),
           ],
         ),
@@ -120,14 +116,14 @@ class MenuPage extends StatelessWidget {
     return ElevatedButton(
       onPressed: onPressed,
       style: ElevatedButton.styleFrom(
-        backgroundColor: Color(0xFF3B82F6), // Color del botón
+        backgroundColor: Color(0xFF3B82F6),
         padding: EdgeInsets.symmetric(vertical: 20),
         textStyle: TextStyle(fontSize: 20),
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(icon, size: 40, color: Colors.white), // Icono del botón
+          Icon(icon, size: 40, color: Colors.white),
           const SizedBox(height: 10),
           Text(title, style: TextStyle(color: Colors.white)),
         ],
@@ -135,3 +131,4 @@ class MenuPage extends StatelessWidget {
     );
   }
 }
+

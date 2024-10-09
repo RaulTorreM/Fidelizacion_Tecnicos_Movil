@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'login_page.dart';
-import '../util/background_painter.dart'; // Importa el CustomPainter
+import '../../util/background_painter.dart'; // Importa el CustomPainter
 
 class HomePage extends StatelessWidget {
   const HomePage({Key? key}) : super(key: key);

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../api_connection/api_service.dart';
+import '../services/api_service.dart';
+import '../data/models/login_request.dart';
 import 'dart:convert'; 
 
 class TestLoginPage extends StatelessWidget {
@@ -39,7 +40,7 @@ class TestLoginPage extends StatelessWidget {
         loginRequest
       );
 
-      print('Respuesta de la API: ${response.toJson()}');
+    
     } catch (e) {
       print('Error: $e');
     }

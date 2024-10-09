@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import '../api_connection/api_service.dart'; // Asegúrate de importar el modelo Tecnico
+import '../../data/models/tecnico.dart';
+// Asegúrate de importar el modelo Tecnico
 
 class ProfilePage extends StatelessWidget {
   final Tecnico tecnico; // Cambiado para recibir el objeto Tecnico
@@ -31,7 +32,7 @@ class ProfilePage extends StatelessWidget {
             _buildInfoCard('ID Técnico', tecnico.idTecnico),
             _buildInfoCard('Celular', tecnico.celularTecnico),
             _buildInfoCard('Rango', tecnico.rangoTecnico),
-            _buildInfoCard('Puntos Totales', '${tecnico.puntosTecnico}'),
+            _buildInfoCard('Puntos Totales', '${tecnico.totalPuntosActualesTecnico}'),
             _buildInfoCard('Fecha de Nacimiento', tecnico.fechaNacimientoTecnico),
             _buildInfoCard('Histórico de Puntos', '${tecnico.historicoPuntosTecnico}'),
 

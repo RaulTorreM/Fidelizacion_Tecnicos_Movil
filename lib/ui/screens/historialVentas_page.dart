@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import '../api_connection/api_service.dart'; // Asegúrate de importar tu servicio API
+import '../../services/api_service.dart'; // Asegúrate de importar tu servicio API
+import '../../data/models/venta_intermediada.dart';
 
 class HistorialVentasPage extends StatefulWidget {
   final String idTecnico;

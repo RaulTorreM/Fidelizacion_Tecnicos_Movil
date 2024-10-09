@@ -1,79 +1,39 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../../logic/login_bloc.dart';
 import 'package:dio/dio.dart';
-import '../../api_connection/api_service.dart';
-import 'temporal_page.dart';
-import '../util/background_painter.dart'; // Importa el CustomPainter
+import '../../data/models/login_request.dart';
+import '../../data/models/login_response.dart';
+import '../../services/api_service.dart';
+import '../../data/repositories/tecnico_repository.dart';
+import '../../util/background_painter.dart';
 import 'menu_page.dart';
 
-class LoginPage extends StatefulWidget {
-  const LoginPage({Key? key}) : super(key: key);
+class LoginPage extends StatelessWidget {
+  final TextEditingController celularController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-  @override
-  _LoginPageState createState() => _LoginPageState();
-}
+  Future<void> _testApiConnection(BuildContext context) async {
+    final dio = Dio(); // Crea una instancia de Dio
+    try {
+      final response = await dio.get("http://192.168.0.15/FidelizacionTecnicos/public/api/loginmovil/login-DataTecnico");
 
-class _LoginPageState extends State<LoginPage> {
-  final _formKey = GlobalKey<FormState>();
-  final _numTelefonoController = TextEditingController();
-  final _passwordController = TextEditingController();
-  final ApiService _apiService = ApiService.create();
-
-  Future<void> _login() async {
-    if (_formKey.currentState!.validate()) {
-      try {
-        // Crear el objeto de solicitud de inicio de sesión
-        final loginRequest = LoginRequest(
-          celularTecnico: _numTelefonoController.text, 
-          password: _passwordController.text,
-        );
-
-        // Realizar la solicitud de inicio de sesión
-        final response = await _apiService.loginTecnico(loginRequest);
-
-        if (response.status == 'success') {
+      if (response.statusCode == 200) {
+        // Asegúrate de que la respuesta sea un List
+        if (response.data is List) {
+          final List<dynamic> tecnicosData = response.data;
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Bienvenido, ${response.tecnico!.nombreTecnico}')),
-          );
-
-          // Navegar a la página siguiente
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => MenuPage(tecnico: response.tecnico!)),
+            SnackBar(content: Text('Conexión exitosa: ${tecnicosData.length} técnicos encontrados.')),
           );
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(response.message)),
+            SnackBar(content: Text('Error: Se esperaba una lista de técnicos.')),
           );
         }
-      } catch (e) {
-        print('Error al conectar con la API: $e');
-        if (e is DioException) {
-          print('DioError tipo: ${e.type}');
-          print('DioError mensaje: ${e.message}');
-          print('DioError respuesta: ${e.response}');
-          print('DioError error: ${e.error}');
-          print('DioError requestOptions: ${e.requestOptions.uri}');
-        }
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error de conexión: $e')),
-        );
-      }
-    }
-  }
-
-  Future<void> _testApiConnection() async {
-    try {
-      // Realizar una solicitud de prueba a la API
-      final response = await _apiService.getAllTecnicos(); // Llamar al método getAllTecnicos
-
-      if (response.isNotEmpty) { // Verificar si la lista no está vacía
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Conexión exitosa: ${response.length} técnicos encontrados.')),
-        );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: No se encontraron técnicos.')),
+          SnackBar(content: Text('Error: Código de respuesta ${response.statusCode}.')),
         );
       }
     } catch (e) {
@@ -83,6 +43,29 @@ class _LoginPageState extends State<LoginPage> {
       );
     }
   }
+
+
+  Future<void> _login(BuildContext context) async {
+    final loginBloc = Provider.of<LoginBloc>(context, listen: false);
+
+    if (_formKey.currentState!.validate()) {
+      await loginBloc.login(celularController.text, passwordController.text);
+
+      if (loginBloc.error != null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(loginBloc.error!)),
+        );
+      } else {
+        // Si todo fue exitoso, navega a la MenuPage
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => MenuPage(tecnico: loginBloc.tecnico!)),
+        );
+      }
+    }
+  }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -121,9 +104,7 @@ class _LoginPageState extends State<LoginPage> {
                       return Text('Error al cargar la imagen: $error', style: const TextStyle(color: Colors.white));
                     },
                   ),
-
                   const SizedBox(height: 20),
-
                   // Título
                   const Text(
                     'Iniciar Sesión',
@@ -133,12 +114,10 @@ class _LoginPageState extends State<LoginPage> {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-
                   const SizedBox(height: 10),
-
                   // Formulario de inicio de sesión
                   TextFormField(
-                    controller: _numTelefonoController,
+                    controller: celularController,
                     decoration: InputDecoration(
                       labelText: 'Teléfono',
                       filled: true,
@@ -159,7 +138,7 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   const SizedBox(height: 16),
                   TextFormField(
-                    controller: _passwordController,
+                    controller: passwordController,
                     decoration: InputDecoration(
                       labelText: 'Contraseña',
                       filled: true,
@@ -181,7 +160,7 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   const SizedBox(height: 24),
                   ElevatedButton(
-                    onPressed: _login,
+                    onPressed: () => _login(context),
                     child: Text('Ingresar'),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Color.fromARGB(255, 4, 26, 43), // Color del botón
@@ -191,7 +170,7 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   const SizedBox(height: 16),
                   ElevatedButton(
-                    onPressed: _testApiConnection, // Acción para probar la conexión API
+                    onPressed: () => _testApiConnection(context), // Acción para probar la conexión API
                     child: Text('Probar Conexión API', style: TextStyle(color: Color(0xFF021526))), // Color del texto
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Color(0xFFE2E2B6), // Color del botón
