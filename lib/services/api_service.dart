@@ -7,10 +7,11 @@ import '../data/models/tecnico.dart' ;
 import '../data/models/venta_intermediada.dart';
 import '../data/models/csrf_response.dart';
 import '../data/models/recompensa.dart';
+import '../data/models/tecnico_response.dart';
 
 part 'api_service.g.dart'; // Asegúrate de tener el archivo generado
 
-@RestApi(baseUrl: "http://192.168.0.15/FidelizacionTecnicos/public/api/")
+@RestApi(baseUrl: "http://192.168.0.15/ProbandoDIMACOF/public/api/")
 abstract class ApiService {
   factory ApiService(Dio dio, {String baseUrl}) = _ApiService;
 
@@ -29,7 +30,7 @@ abstract class ApiService {
   @GET("csrf-token")
   Future<CsrfResponse> getCsrfToken();
 
-  @POST("/loginmovil/login-tecnico")
+  @POST("/loginmovil/login-tecnicos")
   Future<LoginResponse> loginTecnico(@Body() LoginRequest loginRequest);
 
 
@@ -40,12 +41,17 @@ abstract class ApiService {
   Future<List<VentaIntermediada>> getVentasIntermediadas(@Path("idTecnico") String idTecnico);
 
   @GET("/getTecnico/{idTecnico}")
-  Future<Tecnico> obtenerTecnicoPorId(@Path("idTecnico") String idTecnico);
+  Future<TecnicoResponse> obtenerTecnicoPorId(@Path("idTecnico") String idTecnico);
 
   @GET("/recompensas")
   Future<List<Recompensa>> obtenerRecompensas();
 
-
+  @POST("/cambiar-password")
+  Future<Map<String, dynamic>> changePassword(
+    @Field('idTecnico') String idTecnico, 
+    @Field('currentPassword') String currentPassword, 
+    @Field('newPassword') String newPassword
+  );
 }
 
 final ApiService _apiService = ApiService.create();

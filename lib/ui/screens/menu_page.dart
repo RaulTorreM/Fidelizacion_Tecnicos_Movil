@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
-import 'profile_page.dart'; 
+import 'profile_page.dart';
 import 'historialVentas_page.dart';
 import '../../data/models/tecnico.dart';
-import 'package:provider/provider.dart';
-import '../../logic/login_bloc.dart'; // Asegúrate de importar tu LoginBloc
-import '../screens/recompensas_page.dart';
+import '../screens/recompensas_page.dart'; 
+import 'home_page.dart'; // Asegúrate de tener la página de inicio importada.
 
 class MenuPage extends StatefulWidget {
   final Tecnico tecnico;
+  final bool isFirstLogin;
 
-  const MenuPage({Key? key, required this.tecnico}) : super(key: key);
+  const MenuPage({Key? key, required this.tecnico, this.isFirstLogin = false}) : super(key: key);
 
   @override
   _MenuPageState createState() => _MenuPageState();
@@ -17,18 +17,81 @@ class MenuPage extends StatefulWidget {
 
 class _MenuPageState extends State<MenuPage> {
   @override
+  void initState() {
+    super.initState();
+
+    print(widget.isFirstLogin);
+
+    // Mostrar el diálogo de cambio de contraseña si es el primer login
+    if (widget.isFirstLogin) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _showChangePasswordDialog();
+      });
+    }
+  }
+
+  void _showChangePasswordDialog() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15),
+          ),
+          title: const Text('Cambio de Contraseña'),
+          content: const Text(
+            'Por seguridad, debe cambiar su contraseña ya que es su primer inicio de sesión.',
+            style: TextStyle(fontSize: 16),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Cerrar el diálogo
+              },
+              child: const Text(
+                'Aceptar',
+                style: TextStyle(color: Colors.blue),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  // Lógica para cerrar sesión y redirigir al HomePage
+  void _logout(BuildContext context) {
+    // Aquí puedes limpiar cualquier dato de sesión o caché si es necesario
+
+    // Luego redirigir al HomePage o a la pantalla de login
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (context) => const HomePage()), // Redirigir a HomePage
+      (route) => false, // Esto elimina todas las rutas anteriores
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('Bienvenido, ${widget.tecnico.nombreTecnico}'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout),
+            onPressed: () {
+              _logout(context);  // Llama a la función de logout al presionar el botón
+            },
+          ),
+        ],
       ),
       drawer: Drawer(
         child: ListView(
           padding: EdgeInsets.zero,
           children: <Widget>[
-            DrawerHeader(
-              decoration: const BoxDecoration(color: Color(0xFF021526)),
-              child: const Text(
+            const DrawerHeader(
+              decoration: BoxDecoration(color: Color(0xFF021526)),
+              child: Text(
                 'Navegación',
                 style: TextStyle(
                   color: Colors.white,

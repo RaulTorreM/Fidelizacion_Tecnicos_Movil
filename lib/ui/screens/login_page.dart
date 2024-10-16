@@ -2,10 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../logic/login_bloc.dart';
 import 'package:dio/dio.dart';
-import '../../data/models/login_request.dart';
-import '../../data/models/login_response.dart';
-import '../../services/api_service.dart';
-import '../../data/repositories/tecnico_repository.dart';
 import '../../util/background_painter.dart';
 import 'menu_page.dart';
 
@@ -17,7 +13,7 @@ class LoginPage extends StatelessWidget {
   Future<void> _testApiConnection(BuildContext context) async {
     final dio = Dio(); // Crea una instancia de Dio
     try {
-      final response = await dio.get("http://192.168.0.15/FidelizacionTecnicos/public/api/loginmovil/login-DataTecnico");
+      final response = await dio.get("http://192.168.0.15/ProbandoDIMACOF/public/api/loginmovil/login-DataTecnicos");
 
       if (response.statusCode == 200) {
         // Asegúrate de que la respuesta sea un List
@@ -49,17 +45,30 @@ class LoginPage extends StatelessWidget {
     final loginBloc = Provider.of<LoginBloc>(context, listen: false);
 
     if (_formKey.currentState!.validate()) {
-      await loginBloc.login(celularController.text, passwordController.text);
+      await loginBloc.login(celularController.text, passwordController.text,context);
 
-      if (loginBloc.error != null) {
+      if (loginBloc.tecnico != null) {
+      // Navega a MenuPage pasando la bandera isFirstLogin
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => MenuPage(
+            tecnico: loginBloc.tecnico!,
+            isFirstLogin: loginBloc.isFirstLogin,  // Pasa la variable que indica si es el primer login
+          ),
+        ),
+      );
+    } else if (loginBloc.error != null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(loginBloc.error!)),
+      );
+    } else if (loginBloc.error != null) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(loginBloc.error!)),
         );
       } else {
-        // Si todo fue exitoso, navega a la MenuPage
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => MenuPage(tecnico: loginBloc.tecnico!)),
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error desconocido.')),
         );
       }
     }

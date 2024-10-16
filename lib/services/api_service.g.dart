@@ -13,7 +13,7 @@ class _ApiService implements ApiService {
     this._dio, {
     this.baseUrl,
   }) {
-    baseUrl ??= 'http://192.168.0.15/FidelizacionTecnicos/public/api/';
+    baseUrl ??= 'http://192.168.0.15/ProbandoDIMACOF/public/api/';
   }
 
   final Dio _dio;
@@ -62,7 +62,7 @@ class _ApiService implements ApiService {
     )
             .compose(
               _dio.options,
-              '/loginmovil/login-tecnico',
+              '/loginmovil/login-tecnicos',
               queryParameters: queryParameters,
               data: _data,
             )
@@ -136,13 +136,13 @@ class _ApiService implements ApiService {
   }
 
   @override
-  Future<Tecnico> obtenerTecnicoPorId(String idTecnico) async {
+  Future<TecnicoResponse> obtenerTecnicoPorId(String idTecnico) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
     final Map<String, dynamic>? _data = null;
-    final _result =
-        await _dio.fetch<Map<String, dynamic>>(_setStreamType<Tecnico>(Options(
+    final _result = await _dio
+        .fetch<Map<String, dynamic>>(_setStreamType<TecnicoResponse>(Options(
       method: 'GET',
       headers: _headers,
       extra: _extra,
@@ -158,7 +158,7 @@ class _ApiService implements ApiService {
               _dio.options.baseUrl,
               baseUrl,
             ))));
-    final value = Tecnico.fromJson(_result.data!);
+    final value = TecnicoResponse.fromJson(_result.data!);
     return value;
   }
 
@@ -188,6 +188,42 @@ class _ApiService implements ApiService {
     var value = _result.data!
         .map((dynamic i) => Recompensa.fromJson(i as Map<String, dynamic>))
         .toList();
+    return value;
+  }
+
+  @override
+  Future<Map<String, dynamic>> changePassword(
+    String idTecnico,
+    String currentPassword,
+    String newPassword,
+  ) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    final _data = {
+      'idTecnico': idTecnico,
+      'currentPassword': currentPassword,
+      'newPassword': newPassword,
+    };
+    final _result = await _dio.fetch<Map<String, dynamic>>(
+        _setStreamType<Map<String, dynamic>>(Options(
+      method: 'POST',
+      headers: _headers,
+      extra: _extra,
+    )
+            .compose(
+              _dio.options,
+              '/cambiar-password',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(
+                baseUrl: _combineBaseUrls(
+              _dio.options.baseUrl,
+              baseUrl,
+            ))));
+    var value = _result.data!;
+
     return value;
   }
 

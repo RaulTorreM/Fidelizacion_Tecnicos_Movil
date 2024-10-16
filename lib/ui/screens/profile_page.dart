@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../data/models/tecnico.dart';
-// Asegúrate de importar el modelo Tecnico
+import 'cambioContraseña_page.dart'; // Importa la página de cambio de contraseña
 
 class ProfilePage extends StatelessWidget {
   final Tecnico tecnico; // Cambiado para recibir el objeto Tecnico
@@ -22,9 +22,11 @@ class ProfilePage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Título
-            Text(
-              '${tecnico.nombreTecnico}',
-              style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+            Center(
+              child: Text(
+                '${tecnico.nombreTecnico}',
+                style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+              ),
             ),
             const SizedBox(height: 20),
 
@@ -36,6 +38,29 @@ class ProfilePage extends StatelessWidget {
             _buildInfoCard('Fecha de Nacimiento', tecnico.fechaNacimientoTecnico!),
             _buildInfoCard('Histórico de Puntos', '${tecnico.historicoPuntosTecnico}'),
 
+            const Spacer(), // Empuja el botón al final de la pantalla
+
+            // Botón "Actualizar Contraseña"
+            Center(
+              child: ElevatedButton.icon(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ChangePasswordPage(idTecnico: tecnico.idTecnico),
+                    ),
+                  );
+                },
+                icon: const Icon(Icons.lock_outline),
+                label: const Text('Actualizar Contraseña'),
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+              ),
+            ),
             const SizedBox(height: 20),
           ],
         ),
@@ -58,11 +83,12 @@ class ProfilePage extends StatelessWidget {
             ),
             Text(
               value,
-              style: const TextStyle(fontSize: 18),
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w400),
             ),
           ],
         ),
       ),
     );
   }
+  
 }
