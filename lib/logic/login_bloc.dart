@@ -29,9 +29,9 @@ class LoginBloc with ChangeNotifier {
     try {
       // Crear el objeto LoginRequest con los datos de login
       final loginRequest = LoginRequest(
-        // celularTecnico: "964866527",
-        // password: "123",
-        celularTecnico: celular, 
+        celularTecnico: "964866527",
+        // password: "asd",
+        // celularTecnico: celular, 
         password: password,
       );
 
@@ -91,5 +91,19 @@ class LoginBloc with ChangeNotifier {
         );
       },
     );
+  }
+
+  void logout() {
+    // Limpiar los datos del técnico
+    _tecnico = null;
+    isFirstLogin = false;
+    _error = null;
+
+    // Si tienes datos persistentes, como SharedPreferences o token de autenticación, también deberías limpiarlos aquí.
+    // Ejemplo:
+    // await SharedPreferences.getInstance().then((prefs) {
+    //   prefs.clear(); // Esto borraría todos los datos persistidos.
+    // });
+    notifyListeners();
   }
 }

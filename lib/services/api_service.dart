@@ -17,7 +17,6 @@ abstract class ApiService {
 
   static ApiService create() {
     final dio = Dio();
-    
     dio.options.connectTimeout = Duration(seconds: 5);
     dio.options.receiveTimeout = Duration(seconds: 3);
     
@@ -51,6 +50,13 @@ abstract class ApiService {
     @Field('idTecnico') String idTecnico, 
     @Field('currentPassword') String currentPassword, 
     @Field('newPassword') String newPassword
+  );
+
+  @POST("/cambiar-oficio")
+  Future<Map<String, dynamic>> changeJob(
+    @Field('idTecnico') String idTecnico,
+    @Field('currentPassword') String password, 
+    @Field('newJob') String nuevoOficio 
   );
 }
 

@@ -3,7 +3,9 @@ import 'profile_page.dart';
 import 'historialVentas_page.dart';
 import '../../data/models/tecnico.dart';
 import '../screens/recompensas_page.dart'; 
-import 'home_page.dart'; // Asegúrate de tener la página de inicio importada.
+import '../../logic/login_bloc.dart';
+import 'package:provider/provider.dart';
+import 'home_page.dart'; 
 
 class MenuPage extends StatefulWidget {
   final Tecnico tecnico;
@@ -61,12 +63,15 @@ class _MenuPageState extends State<MenuPage> {
 
   // Lógica para cerrar sesión y redirigir al HomePage
   void _logout(BuildContext context) {
-    // Aquí puedes limpiar cualquier dato de sesión o caché si es necesario
+    // Obtener el LoginBloc
+    final loginBloc = Provider.of<LoginBloc>(context, listen: false);
+    
+    // Llamar al método logout
+    loginBloc.logout();
 
-    // Luego redirigir al HomePage o a la pantalla de login
     Navigator.pushAndRemoveUntil(
       context,
-      MaterialPageRoute(builder: (context) => const HomePage()), // Redirigir a HomePage
+      MaterialPageRoute(builder: (context) => const HomePage()), // O LoginPage
       (route) => false, // Esto elimina todas las rutas anteriores
     );
   }
@@ -106,7 +111,7 @@ class _MenuPageState extends State<MenuPage> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => ProfilePage(tecnico: widget.tecnico),
+                    builder: (context) => ProfilePage(idTecnico: widget.tecnico.idTecnico,),
                   ),
                 );
               },
@@ -137,7 +142,7 @@ class _MenuPageState extends State<MenuPage> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => ProfilePage(tecnico: widget.tecnico),
+                  builder: (context) => ProfilePage(idTecnico: widget.tecnico.idTecnico,),
                 ),
               );
             }),
