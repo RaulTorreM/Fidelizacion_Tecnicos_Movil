@@ -47,7 +47,7 @@ class HomePage extends StatelessWidget {
 
                 // Subtítulo
                 const Text(
-                  'Control de Recompensas',
+                  'Club de Técnicos',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 16,

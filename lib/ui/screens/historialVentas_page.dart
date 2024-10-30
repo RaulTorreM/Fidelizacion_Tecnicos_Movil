@@ -28,13 +28,13 @@ class _HistorialVentasPageState extends State<HistorialVentasPage> {
       Color getColorForEstado(int estado) {
         switch (estado) {
           case 1:
-            return const Color.fromARGB(255, 8, 93, 163);
+            return const Color(0xFF2394da);
           case 2:
-            return const Color.fromARGB(255, 206, 186, 7);
+            return const Color(0xFFFF9800);
           case 3:
-            return Colors.green;
+            return Color(0xFF4CAF50);
           case 4:
-            return const Color.fromARGB(157, 107, 22, 15);
+            return Color(0xFFF44336);
           default:
             return Colors.grey;
         }
@@ -81,7 +81,7 @@ class _HistorialVentasPageState extends State<HistorialVentasPage> {
                       );
                     },
                     child: Card(
-                      color: getColorForEstado(venta.idEstadoVenta), // Color según estado
+                      color: Color.fromARGB(118, 16, 4, 61), // Color según estado
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
@@ -95,23 +95,31 @@ class _HistorialVentasPageState extends State<HistorialVentasPage> {
                               style: const TextStyle(
                                 fontSize: 15,
                                 fontWeight: FontWeight.bold,
-                                color: Color.fromARGB(255, 0, 0, 0),
+                                color: Color.fromARGB(255, 233, 239, 240),
                               ),
                             ),
                             const SizedBox(height: 5),
                             Text(
-                              venta.nombreCliente_VentaIntermediada,
+                              "Puntos Generados: "+venta.puntosGanados_VentaIntermediada.toString(),
                               style: const TextStyle(
-                                fontSize: 11,
-                                color: Color.fromARGB(255, 241, 73, 6),
+                                fontSize: 12,
+                                color: Color.fromARGB(255, 9, 255, 0),
                               ),
                             ),
+                            
                             const SizedBox(height: 8),
                             Text(
                               venta.fechaHoraEmision_VentaIntermediada,
                               style: const TextStyle(
                                 fontSize: 12,
-                                color: Color.fromARGB(255, 2, 15, 26),
+                                color: Color.fromARGB(255, 213, 223, 231),
+                              ),
+                            ),
+                            Text(
+                              venta.estado_nombre!,
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: getColorForEstado(venta.idEstadoVenta),
                               ),
                             ),
                           ],
