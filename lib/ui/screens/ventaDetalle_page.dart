@@ -26,12 +26,12 @@ class VentaDetallePage extends StatelessWidget {
               const SizedBox(height: 20),
 
               // Información de la Venta
-              _buildInfoCard('Cliente', venta.nombreCliente),
-              _buildInfoCard('Fecha y Hora de Emisión', venta.fechaHoraEmision.toString()),
-              _buildInfoCard('Fecha y Hora Cargada', venta.fechaHoraCargada.toString()),
-              _buildInfoCard('Monto Total', '\$${venta.montoTotal}'),
-              _buildInfoCard('Puntos Generados', '${venta.puntosGanados}'),
-              _buildInfoCard('Estado', venta.estado),
+              _buildInfoCard('Cliente', venta.nombreCliente_VentaIntermediada),
+              _buildInfoCard('Fecha y Hora de Emisión', venta.fechaHoraEmision_VentaIntermediada.toString()),
+              _buildInfoCard('Fecha y Hora Cargada', venta.fechaHoraCargada_VentaIntermediada.toString()),
+              _buildInfoCard('Monto Total', '\$${venta.montoTotal_VentaIntermediada}'),
+              _buildInfoCard('Puntos Generados', '${venta.puntosGanados_VentaIntermediada}'),
+              _buildInfoCard('Estado', venta.estado_nombre!.toString()),
 
               const SizedBox(height: 20),
             ],

@@ -11,7 +11,7 @@ import '../data/models/tecnico_response.dart';
 
 part 'api_service.g.dart'; // Asegúrate de tener el archivo generado
 
-@RestApi(baseUrl: "http://192.168.0.15/ProbandoDIMACOF/public/api/")
+@RestApi(baseUrl: "http://192.168.0.15/FidelizacionTecnicos/public/api/")
 abstract class ApiService {
   factory ApiService(Dio dio, {String baseUrl}) = _ApiService;
 
@@ -33,8 +33,8 @@ abstract class ApiService {
   Future<LoginResponse> loginTecnico(@Body() LoginRequest loginRequest);
 
 
-  @GET("/loginmovil/login-DataTecnico")
-  Future<List<Tecnico>> getAllTecnicos();
+  @GET("/loginmovil/login-DataTecnicos")
+  Future<List<Tecnico>> getAllLoginTecnicos();
 
   @GET("/ventas-intermediadas/{idTecnico}")
   Future<List<VentaIntermediada>> getVentasIntermediadas(@Path("idTecnico") String idTecnico);

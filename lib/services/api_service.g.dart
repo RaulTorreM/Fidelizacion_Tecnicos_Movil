@@ -13,7 +13,7 @@ class _ApiService implements ApiService {
     this._dio, {
     this.baseUrl,
   }) {
-    baseUrl ??= 'http://192.168.0.15/ProbandoDIMACOF/public/api/';
+    baseUrl ??= 'http://192.168.0.15/FidelizacionTecnicos/public/api/';
   }
 
   final Dio _dio;
@@ -76,7 +76,7 @@ class _ApiService implements ApiService {
   }
 
   @override
-  Future<List<Tecnico>> getAllTecnicos() async {
+  Future<List<Tecnico>> getAllLoginTecnicos() async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
@@ -89,7 +89,7 @@ class _ApiService implements ApiService {
     )
             .compose(
               _dio.options,
-              '/loginmovil/login-DataTecnico',
+              '/loginmovil/login-DataTecnicos',
               queryParameters: queryParameters,
               data: _data,
             )

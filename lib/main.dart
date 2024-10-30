@@ -1,3 +1,4 @@
+import 'package:fidelizacion_tecnicos/ui/screens/home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'ui/screens/login_page.dart';
@@ -41,7 +42,7 @@ class MyApp extends StatelessWidget {
         ),
         initialRoute: '/',
         routes: {
-          '/': (context) => LoginPage(),
+          '/': (context) => HomePage(),
         },
       ),
     );

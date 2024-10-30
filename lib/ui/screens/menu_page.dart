@@ -3,6 +3,7 @@ import 'profile_page.dart';
 import 'historialVentas_page.dart';
 import '../../data/models/tecnico.dart';
 import '../screens/recompensas_page.dart'; 
+import '../screens/solicitudCanje_page.dart'; 
 import '../../logic/login_bloc.dart';
 import 'package:provider/provider.dart';
 import 'home_page.dart'; 
@@ -159,6 +160,14 @@ class _MenuPageState extends State<MenuPage> {
                 context,
                 MaterialPageRoute(
                   builder: (context) => const RecompensasPage(),
+                ),
+              );
+            }),
+            _buildMenuCard('Solicitar Canje', Icons.badge, () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => SolicitudCanjePage(),
                 ),
               );
             }),

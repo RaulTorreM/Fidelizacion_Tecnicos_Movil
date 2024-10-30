@@ -32,7 +32,7 @@ class TecnicoRepository {
   // Método para obtener la lista de técnicos
   Future<List<Tecnico>> obtenerTecnicos() async {
     try {
-      final response = await _apiService.getAllTecnicos();
+      final response = await _apiService.getAllLoginTecnicos();
       return response;
     } catch (e) {
       throw Exception('Error al obtener técnicos: $e');
