@@ -7,6 +7,7 @@ import '../data/models/tecnico.dart' ;
 import '../data/models/venta_intermediada.dart';
 import '../data/models/csrf_response.dart';
 import '../data/models/recompensa.dart';
+import '../data/models/tecnico_response.dart';
 
 part 'api_service.g.dart'; // Asegúrate de tener el archivo generado
 
@@ -16,7 +17,6 @@ abstract class ApiService {
 
   static ApiService create() {
     final dio = Dio();
-    
     dio.options.connectTimeout = Duration(seconds: 5);
     dio.options.receiveTimeout = Duration(seconds: 3);
     
@@ -29,23 +29,35 @@ abstract class ApiService {
   @GET("csrf-token")
   Future<CsrfResponse> getCsrfToken();
 
-  @POST("/loginmovil/login-tecnico")
+  @POST("/loginmovil/login-tecnicos")
   Future<LoginResponse> loginTecnico(@Body() LoginRequest loginRequest);
 
 
-  @GET("/loginmovil/login-DataTecnico")
-  Future<List<Tecnico>> getAllTecnicos();
+  @GET("/loginmovil/login-DataTecnicos")
+  Future<List<Tecnico>> getAllLoginTecnicos();
 
   @GET("/ventas-intermediadas/{idTecnico}")
   Future<List<VentaIntermediada>> getVentasIntermediadas(@Path("idTecnico") String idTecnico);
 
   @GET("/getTecnico/{idTecnico}")
-  Future<Tecnico> obtenerTecnicoPorId(@Path("idTecnico") String idTecnico);
+  Future<TecnicoResponse> obtenerTecnicoPorId(@Path("idTecnico") String idTecnico);
 
   @GET("/recompensas")
   Future<List<Recompensa>> obtenerRecompensas();
 
+  @POST("/cambiar-password")
+  Future<Map<String, dynamic>> changePassword(
+    @Field('idTecnico') String idTecnico, 
+    @Field('currentPassword') String currentPassword, 
+    @Field('newPassword') String newPassword
+  );
 
+  @POST("/cambiar-oficio")
+  Future<Map<String, dynamic>> changeJob(
+    @Field('idTecnico') String idTecnico,
+    @Field('currentPassword') String password, 
+    @Field('newJob') String nuevoOficio 
+  );
 }
 
 final ApiService _apiService = ApiService.create();

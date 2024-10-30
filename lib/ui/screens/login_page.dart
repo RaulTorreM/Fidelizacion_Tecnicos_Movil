@@ -2,10 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../logic/login_bloc.dart';
 import 'package:dio/dio.dart';
-import '../../data/models/login_request.dart';
-import '../../data/models/login_response.dart';
-import '../../services/api_service.dart';
-import '../../data/repositories/tecnico_repository.dart';
 import '../../util/background_painter.dart';
 import 'menu_page.dart';
 
@@ -17,10 +13,9 @@ class LoginPage extends StatelessWidget {
   Future<void> _testApiConnection(BuildContext context) async {
     final dio = Dio(); // Crea una instancia de Dio
     try {
-      final response = await dio.get("http://192.168.0.15/FidelizacionTecnicos/public/api/loginmovil/login-DataTecnico");
+      final response = await dio.get("http://192.168.0.15/FidelizacionTecnicos/public/api/loginmovil/login-DataTecnicos");
 
       if (response.statusCode == 200) {
-        // Asegúrate de que la respuesta sea un List
         if (response.data is List) {
           final List<dynamic> tecnicosData = response.data;
           ScaffoldMessenger.of(context).showSnackBar(
@@ -44,28 +39,38 @@ class LoginPage extends StatelessWidget {
     }
   }
 
-
   Future<void> _login(BuildContext context) async {
     final loginBloc = Provider.of<LoginBloc>(context, listen: false);
 
     if (_formKey.currentState!.validate()) {
-      await loginBloc.login(celularController.text, passwordController.text);
+      // Ejecuta el método de login
+      await loginBloc.login(celularController.text, passwordController.text, context);
 
-      if (loginBloc.error != null) {
+      // Verifica si el técnico fue autenticado correctamente
+      if (loginBloc.tecnico != null) {
+        // Navega a MenuPage solo si el login es exitoso
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => MenuPage(
+              tecnico: loginBloc.tecnico!,
+              isFirstLogin: loginBloc.isFirstLogin,
+            ),
+          ),
+        );
+      } else if (loginBloc.error != null) {
+        // Muestra el mensaje de error si el login falló
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(loginBloc.error!)),
         );
       } else {
-        // Si todo fue exitoso, navega a la MenuPage
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => MenuPage(tecnico: loginBloc.tecnico!)),
+        // Muestra un mensaje de error genérico si algo falla inesperadamente
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: const Text('Error desconocido.')),
         );
       }
     }
   }
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -78,7 +83,7 @@ class LoginPage extends StatelessWidget {
             Navigator.pop(context); // Regresar a HomePage
           },
         ),
-        backgroundColor: Color(0xFF021526), // Color de la AppBar
+        backgroundColor: const Color(0xFF021526),
       ),
       body: Stack(
         children: [
@@ -110,7 +115,7 @@ class LoginPage extends StatelessWidget {
                     'Iniciar Sesión',
                     style: TextStyle(
                       fontSize: 24,
-                      color: Color(0xFFE2E2B6), // Color del texto
+                      color: Color(0xFFE2E2B6),
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -121,14 +126,14 @@ class LoginPage extends StatelessWidget {
                     decoration: InputDecoration(
                       labelText: 'Teléfono',
                       filled: true,
-                      fillColor: Color(0xFF03346E), // Color de fondo del campo
-                      labelStyle: TextStyle(color: Color(0xFFE2E2B6)), // Color de la etiqueta
+                      fillColor: const Color(0xFF03346E),
+                      labelStyle: const TextStyle(color: Color(0xFFE2E2B6)),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide(color: Color(0xFFE2E2B6)), // Borde claro
+                        borderSide: const BorderSide(color: Color(0xFFE2E2B6)),
                       ),
                     ),
-                    style: TextStyle(color: Color(0xFFE2E2B6)), // Color del texto
+                    style: const TextStyle(color: Color(0xFFE2E2B6)),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'Por favor ingrese su Teléfono';
@@ -142,15 +147,15 @@ class LoginPage extends StatelessWidget {
                     decoration: InputDecoration(
                       labelText: 'Contraseña',
                       filled: true,
-                      fillColor: Color(0xFF03346E), // Color de fondo del campo
-                      labelStyle: TextStyle(color: Color(0xFFE2E2B6)), // Color de la etiqueta
+                      fillColor: const Color(0xFF03346E),
+                      labelStyle: const TextStyle(color: Color(0xFFE2E2B6)),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide(color: Color(0xFFE2E2B6)), // Borde claro
+                        borderSide: const BorderSide(color: Color(0xFFE2E2B6)),
                       ),
                     ),
                     obscureText: true,
-                    style: TextStyle(color: Color(0xFFE2E2B6)), // Color del texto
+                    style: const TextStyle(color: Color(0xFFE2E2B6)),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'Por favor ingrese su contraseña';
@@ -161,19 +166,19 @@ class LoginPage extends StatelessWidget {
                   const SizedBox(height: 24),
                   ElevatedButton(
                     onPressed: () => _login(context),
-                    child: Text('Ingresar'),
+                    child: const Text('Ingresar'),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Color.fromARGB(255, 4, 26, 43), // Color del botón
+                      backgroundColor: const Color.fromARGB(255, 4, 26, 43),
                       minimumSize: const Size(double.infinity, 50),
-                      foregroundColor: Colors.white, // Color del texto
+                      foregroundColor: Colors.white,
                     ),
                   ),
                   const SizedBox(height: 16),
                   ElevatedButton(
-                    onPressed: () => _testApiConnection(context), // Acción para probar la conexión API
-                    child: Text('Probar Conexión API', style: TextStyle(color: Color(0xFF021526))), // Color del texto
+                    onPressed: () => _testApiConnection(context),
+                    child: const Text('Probar Conexión API', style: TextStyle(color: Color(0xFF021526))),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Color(0xFFE2E2B6), // Color del botón
+                      backgroundColor: const Color(0xFFE2E2B6),
                     ),
                   ),
                 ],

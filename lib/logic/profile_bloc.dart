@@ -3,11 +3,13 @@ import 'package:flutter/material.dart';
 import '../data/models/tecnico.dart';
 import '../data/repositories/tecnico_repository.dart';
 import '../services/api_service.dart';
+import '../data/repositories/perfil_repository.dart';
 
 class PerfilBloc with ChangeNotifier {
   final TecnicoRepository _tecnicoRepository;
+  final PerfilRepository perfilRepository;
 
-  PerfilBloc(ApiService apiService)
+  PerfilBloc(ApiService apiService, this.perfilRepository)
       : _tecnicoRepository = TecnicoRepository(apiService);
 
   Tecnico? _tecnico;
@@ -41,5 +43,18 @@ class PerfilBloc with ChangeNotifier {
     _tecnico = null;
     _error = null;
     notifyListeners();
+  }
+
+  Future<void> changePassword(String idTecnico, String currentPassword, String newPassword) async {
+    final response = await perfilRepository.changePassword(idTecnico, currentPassword, newPassword);
+
+    if (response['status'] == 'success') {
+      // Notificar éxito
+      notifyListeners();
+    } else {
+      // Capturar el error
+      _error = response['message'];
+      notifyListeners();
+    }
   }
 }

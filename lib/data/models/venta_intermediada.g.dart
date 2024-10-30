@@ -10,26 +10,53 @@ VentaIntermediada _$VentaIntermediadaFromJson(Map<String, dynamic> json) =>
     VentaIntermediada(
       idVentaIntermediada: json['idVentaIntermediada'] as String,
       idTecnico: json['idTecnico'] as String,
-      nombreCliente: json['nombreCliente'] as String,
-      tipoCodigoCliente: json['tipoCodigoCliente'] as String,
-      codigoCliente: json['codigoCliente'] as String,
-      fechaHoraEmision: DateTime.parse(json['fechaHoraEmision'] as String),
-      fechaHoraCargada: DateTime.parse(json['fechaHoraCargada'] as String),
-      montoTotal: (json['montoTotal'] as num).toDouble(),
-      puntosGanados: (json['puntosGanados'] as num).toInt(),
-      estado: json['estado'] as String,
+      nombreTecnico: json['nombreTecnico'] as String,
+      tipoCodigoCliente_VentaIntermediada:
+          json['tipoCodigoCliente_VentaIntermediada'] as String,
+      codigoCliente_VentaIntermediada:
+          json['codigoCliente_VentaIntermediada'] as String,
+      nombreCliente_VentaIntermediada:
+          json['nombreCliente_VentaIntermediada'] as String,
+      fechaHoraEmision_VentaIntermediada:
+          json['fechaHoraEmision_VentaIntermediada'] as String,
+      fechaHoraCargada_VentaIntermediada:
+          json['fechaHoraCargada_VentaIntermediada'] as String,
+      montoTotal_VentaIntermediada:
+          (json['montoTotal_VentaIntermediada'] as num).toDouble(),
+      puntosGanados_VentaIntermediada:
+          (json['puntosGanados_VentaIntermediada'] as num).toInt(),
+      puntosActuales_VentaIntermediada:
+          (json['puntosActuales_VentaIntermediada'] as num).toInt(),
+      idEstadoVenta: (json['idEstadoVenta'] as num).toInt(),
+      estado_nombre: json['estado_nombre'] as String?,
+      created_at: json['created_at'] as String?,
+      updated_at: json['updated_at'] as String?,
+      deleted_at: json['deleted_at'] as String?,
     );
 
 Map<String, dynamic> _$VentaIntermediadaToJson(VentaIntermediada instance) =>
     <String, dynamic>{
       'idVentaIntermediada': instance.idVentaIntermediada,
       'idTecnico': instance.idTecnico,
-      'nombreCliente': instance.nombreCliente,
-      'tipoCodigoCliente': instance.tipoCodigoCliente,
-      'codigoCliente': instance.codigoCliente,
-      'fechaHoraEmision': instance.fechaHoraEmision.toIso8601String(),
-      'fechaHoraCargada': instance.fechaHoraCargada.toIso8601String(),
-      'montoTotal': instance.montoTotal,
-      'puntosGanados': instance.puntosGanados,
-      'estado': instance.estado,
+      'nombreTecnico': instance.nombreTecnico,
+      'tipoCodigoCliente_VentaIntermediada':
+          instance.tipoCodigoCliente_VentaIntermediada,
+      'codigoCliente_VentaIntermediada':
+          instance.codigoCliente_VentaIntermediada,
+      'nombreCliente_VentaIntermediada':
+          instance.nombreCliente_VentaIntermediada,
+      'fechaHoraEmision_VentaIntermediada':
+          instance.fechaHoraEmision_VentaIntermediada,
+      'fechaHoraCargada_VentaIntermediada':
+          instance.fechaHoraCargada_VentaIntermediada,
+      'montoTotal_VentaIntermediada': instance.montoTotal_VentaIntermediada,
+      'puntosGanados_VentaIntermediada':
+          instance.puntosGanados_VentaIntermediada,
+      'puntosActuales_VentaIntermediada':
+          instance.puntosActuales_VentaIntermediada,
+      'idEstadoVenta': instance.idEstadoVenta,
+      'estado_nombre': instance.estado_nombre,
+      'created_at': instance.created_at,
+      'updated_at': instance.updated_at,
+      'deleted_at': instance.deleted_at,
     };

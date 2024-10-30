@@ -7,8 +7,15 @@ class LoginRequest {
   final String celularTecnico;
   final String password;
 
-  LoginRequest({required this.celularTecnico, required this.password});
+  LoginRequest({
+    required this.celularTecnico,
+    required this.password,
+  });
 
-  factory LoginRequest.fromJson(Map<String, dynamic> json) => _$LoginRequestFromJson(json);
-  Map<String, dynamic> toJson() => _$LoginRequestToJson(this);
+  Map<String, dynamic> toJson() {
+    return {
+      'celularTecnico': celularTecnico,
+      'password': password,
+    };
+  }
 }
