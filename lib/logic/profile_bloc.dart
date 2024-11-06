@@ -57,4 +57,22 @@ class PerfilBloc with ChangeNotifier {
       notifyListeners();
     }
   }
+
+  Future<void> changeJobs(String idTecnico, List<int> oficios, String password) async {
+    try {
+      // Llamar al repositorio para actualizar los oficios
+      final response = await perfilRepository.updateJobs(idTecnico, oficios, password);
+
+      // Aquí puedes agregar el código para manejar la respuesta de éxito
+      if (response['message'] == 'Oficios actualizados correctamente') {
+        
+        _error = response['message'];
+        notifyListeners();
+      }
+    } catch (e) {
+  
+      _error = 'Error al cambiar oficios: ${e.toString()}';
+      notifyListeners();
+    }
+  }
 }

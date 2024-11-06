@@ -13,35 +13,46 @@ class Tecnico {
   @JsonKey(name: 'celularTecnico')
   final String celularTecnico;
 
-  @JsonKey(name: 'oficioTecnico')
-  final String oficioTecnico;
-
   @JsonKey(name: 'fechaNacimiento_Tecnico')
-  final String? fechaNacimientoTecnico; // Cambiado el nombre de la clave
+  final String? fechaNacimientoTecnico;
 
   @JsonKey(name: 'totalPuntosActuales_Tecnico')
-  final int totalPuntosActualesTecnico; // Cambiado el nombre de la clave
+  final int totalPuntosActualesTecnico;
 
   @JsonKey(name: 'historicoPuntos_Tecnico')
-  final int historicoPuntosTecnico; // Cambiado el nombre de la clave
+  final int historicoPuntosTecnico;
 
   @JsonKey(name: 'rangoTecnico')
-  final String? rangoTecnico; // Campo opcional
+  final String? rangoTecnico;
+
+  @JsonKey(name: 'oficios')
+  final List<Oficio> oficios;
 
   Tecnico({
     required this.idTecnico,
     required this.nombreTecnico,
     required this.celularTecnico,
-    required this.oficioTecnico,
-    this.fechaNacimientoTecnico, // Campo opcional
+    this.fechaNacimientoTecnico,
     required this.totalPuntosActualesTecnico,
     required this.historicoPuntosTecnico,
-    this.rangoTecnico, // Campo opcional
+    this.rangoTecnico,
+    required this.oficios,
   });
 
-  // Método para deserializar el JSON
   factory Tecnico.fromJson(Map<String, dynamic> json) => _$TecnicoFromJson(json);
-
-  // Método para serializar el objeto a JSON
   Map<String, dynamic> toJson() => _$TecnicoToJson(this);
+}
+
+@JsonSerializable()
+class Oficio {
+  @JsonKey(name: 'idOficio')
+  final int idOficio;
+
+  @JsonKey(name: 'nombreOficio') // Asegúrate que el nombre sea consistente con el JSON
+  final String nombreOficio;
+
+  Oficio({required this.idOficio, required this.nombreOficio});
+
+  factory Oficio.fromJson(Map<String, dynamic> json) => _$OficioFromJson(json);
+  Map<String, dynamic> toJson() => _$OficioToJson(this);
 }
