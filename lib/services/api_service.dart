@@ -58,6 +58,18 @@ abstract class ApiService {
     @Field('currentPassword') String password, 
     @Field('newJob') String nuevoOficio 
   );
+
+  @PUT("/tecnico/{idTecnico}/oficios")
+    Future<Map<String, dynamic>> updateJobs(
+      @Path("idTecnico") String idTecnico,
+      @Body() Map<String, dynamic> requestBody,
+    );
+
+  @GET("/oficios")
+  Future<List<Oficio>> getAvailableJobs();  // Esto es correcto, devuelve la lista de Oficios
+
+
+
 }
 
 final ApiService _apiService = ApiService.create();

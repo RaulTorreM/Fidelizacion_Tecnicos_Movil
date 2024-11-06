@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../data/models/tecnico.dart';
-import '../../logic/profile_bloc.dart'; // Asegúrate de importar el bloque
+import '../../logic/profile_bloc.dart';
 import 'cambioOficio_page.dart';
 import 'cambioContraseña_page.dart';
 
@@ -21,7 +21,6 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   void initState() {
     super.initState();
-    // Llama a fetchPerfil solo una vez al iniciar
     Future.microtask(() {
       final profileBloc = Provider.of<PerfilBloc>(context, listen: false);
       profileBloc.fetchPerfil(widget.idTecnico);
@@ -66,11 +65,11 @@ class _ProfilePageState extends State<ProfilePage> {
                 const SizedBox(height: 20),
                 _buildInfoCard('ID Técnico', tecnico.idTecnico),
                 _buildInfoCard('Celular', tecnico.celularTecnico),
-                _buildInfoCard('Rango', tecnico.rangoTecnico!),
+                _buildInfoCard('Rango', tecnico.rangoTecnico ?? 'Sin rango'),
                 _buildInfoCard('Puntos Totales', '${tecnico.totalPuntosActualesTecnico}'),
-                _buildInfoCard('Fecha de Nacimiento', tecnico.fechaNacimientoTecnico!),
+                _buildInfoCard('Fecha de Nacimiento', tecnico.fechaNacimientoTecnico ?? 'No disponible'),
                 _buildInfoCard('Histórico de Puntos', '${tecnico.historicoPuntosTecnico}'),
-                _buildEditableInfoCard('Oficio', tecnico.oficioTecnico, tecnico, context),
+                _buildOficiosCard(tecnico.oficios, tecnico, context),
                 const SizedBox(height: 20),
                 Center(
                   child: ElevatedButton.icon(
@@ -128,18 +127,18 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  Widget _buildEditableInfoCard(String title, String value, Tecnico tecnico, BuildContext context) {
+  Widget _buildOficiosCard(List<Oficio> oficios, Tecnico tecnico, BuildContext context) {
     return Card(
       elevation: 4,
       margin: const EdgeInsets.symmetric(vertical: 8),
       child: ListTile(
-        title: Text(
-          title,
-          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+        title: const Text(
+          'Oficios',
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
         ),
-        subtitle: Text(
-          value,
-          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w400),
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: oficios.map((oficio) => Text(oficio.nombreOficio)).toList(),
         ),
         trailing: IconButton(
           icon: const Icon(Icons.edit),
