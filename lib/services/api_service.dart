@@ -66,7 +66,7 @@ abstract class ApiService {
     );
 
   @GET("/oficios")
-  Future<List<Oficio>> getAvailableJobs();  // Esto es correcto, devuelve la lista de Oficios
+  Future<List<Oficio>> getAvailableJobs();  
 
 
 

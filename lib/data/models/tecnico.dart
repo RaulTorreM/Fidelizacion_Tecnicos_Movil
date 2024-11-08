@@ -44,11 +44,12 @@ class Tecnico {
 }
 
 @JsonSerializable()
+
 class Oficio {
   @JsonKey(name: 'idOficio')
   final int idOficio;
 
-  @JsonKey(name: 'nombreOficio') // Asegúrate que el nombre sea consistente con el JSON
+  @JsonKey(name: 'nombre_Oficio') 
   final String nombreOficio;
 
   Oficio({required this.idOficio, required this.nombreOficio});
@@ -56,3 +57,4 @@ class Oficio {
   factory Oficio.fromJson(Map<String, dynamic> json) => _$OficioFromJson(json);
   Map<String, dynamic> toJson() => _$OficioToJson(this);
 }
+

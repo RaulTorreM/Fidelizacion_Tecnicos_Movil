@@ -31,21 +31,29 @@ class PerfilRepository {
   }
 
   // Método para actualizar los oficios de un técnico
-  Future<Map<String, dynamic>> updateJobs(String idTecnico, List<int> oficios, String password) async {
-    try {
-      // Crear el cuerpo de la solicitud
-      Map<String, dynamic> requestBody = {
-        'oficios': oficios,  // Enviar solo los IDs de los oficios
-        'password': password,
-      };
+  Future<void> updateJobs(String idTecnico, List<int> oficios, String password) async {
+  try {
+    // Cuerpo de la solicitud
+    Map<String, dynamic> requestBody = {
+      'idTecnico': idTecnico,
+      'oficios': oficios, // Lista de IDs de oficios
+      'password': password,
+    };
 
-      // Llamar a la API
-      final response = await apiService.updateJobs(idTecnico, requestBody);
-      return response;
-    } catch (e) {
-      throw Exception('Error al actualizar los oficios: $e');
+    // Llamada a la API usando ApiService
+    final response = await apiService.updateJobs(idTecnico, requestBody);
+
+    if (response.containsKey('message') && response['message'] == 'Oficios actualizados correctamente') {
+      print('Oficios actualizados en la API con éxito');
+      // Aquí puedes actualizar el estado o mostrar un mensaje de éxito en la UI
+    } else {
+      throw Exception('Error en la respuesta de la API');
     }
+  } catch (e) {
+    throw Exception('Error al actualizar los oficios: $e');
   }
+}
+
 
   // Método para obtener los oficios disponibles directamente desde el modelo Tecnico
   Future<List<Oficio>> getAvailableJobs() async {

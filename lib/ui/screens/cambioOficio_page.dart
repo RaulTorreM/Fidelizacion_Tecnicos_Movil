@@ -116,22 +116,28 @@ class _ChangeJobPageState extends State<ChangeJobPage> {
                           _isLoading = true;
                         });
                         try {
-                          // Enviar la solicitud para cambiar los oficios
+                          // Envía la solicitud a la API para cambiar los oficios
                           final response = await _profileRepository.updateJobs(
                             widget.tecnico.idTecnico,
-                            _selectedJobs,  // Enviar IDs de los oficios seleccionados
+                            _selectedJobs,  // IDs de los oficios seleccionados
                             _passwordController.text,
                           );
 
-                          // Navegar de vuelta al perfil
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => ProfilePage(
-                                idTecnico: widget.tecnico.idTecnico,
+                          // Maneja la respuesta y navega de vuelta al perfil si es exitoso
+                          if (response['message'] == 'Oficios actualizados correctamente') {
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => ProfilePage(
+                                  idTecnico: widget.tecnico.idTecnico,
+                                ),
                               ),
-                            ),
-                          );
+                            );
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text('Error: ${response['message']}')),
+                            );
+                          }
                         } catch (e) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(content: Text('Error: ${e.toString()}')),
@@ -146,7 +152,8 @@ class _ChangeJobPageState extends State<ChangeJobPage> {
                           const SnackBar(content: Text('Por favor ingresa todos los datos')),
                         );
                       }
-                    },
+                    }
+                    ,
                     child: const Text('Guardar Cambios'),
                   ),
           ],
