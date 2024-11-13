@@ -1,6 +1,6 @@
 import '../../services/api_service.dart';
 
-
+import '../../data/models/tecnico_response.dart';
 import '../../data/models/tecnico.dart';  // Asegúrate de que la clase Tecnico está importada correctamente
 
 class PerfilRepository {
@@ -19,40 +19,28 @@ class PerfilRepository {
     }
   }
 
-  // Método para cambiar el oficio de un técnico (con una sola opción de oficio)
-  Future<Map<String, dynamic>> changeJob(String idTecnico, String nuevoOficio, String password) async {
-    try {
-      final response = await apiService.changeJob(idTecnico, password, nuevoOficio);
-      return response;
-    } catch (e) {
-      // Manejo de errores
-      return {'success': false, 'message': 'Error: ${e.toString()}'};
-    }
-  }
 
   // Método para actualizar los oficios de un técnico
-  Future<void> updateJobs(String idTecnico, List<int> oficios, String password) async {
-  try {
-    // Cuerpo de la solicitud
-    Map<String, dynamic> requestBody = {
-      'idTecnico': idTecnico,
-      'oficios': oficios, // Lista de IDs de oficios
-      'password': password,
-    };
+  Future<Map<String, dynamic>> updateJobs(String idTecnico, List<int> oficios, String password) async {
+    try {
+      Map<String, dynamic> requestBody = {
+        'idTecnico': idTecnico,
+        'oficios': oficios,
+        'password': password,
+      };
 
-    // Llamada a la API usando ApiService
-    final response = await apiService.updateJobs(idTecnico, requestBody);
+      final response = await apiService.updateJobs(idTecnico, requestBody);
 
-    if (response.containsKey('message') && response['message'] == 'Oficios actualizados correctamente') {
-      print('Oficios actualizados en la API con éxito');
-      // Aquí puedes actualizar el estado o mostrar un mensaje de éxito en la UI
-    } else {
-      throw Exception('Error en la respuesta de la API');
+      if (response.containsKey('message') && response['message'] == 'Oficios actualizados correctamente') {
+        return {'status': 'success', 'message': 'Oficios actualizados correctamente'};
+      } else {
+        return {'status': 'error', 'message': 'Error en la respuesta de la API'};
+      }
+    } catch (e) {
+      return {'status': 'error', 'message': 'Error al actualizar los oficios: $e'};
     }
-  } catch (e) {
-    throw Exception('Error al actualizar los oficios: $e');
   }
-}
+
 
 
   // Método para obtener los oficios disponibles directamente desde el modelo Tecnico
@@ -64,4 +52,16 @@ class PerfilRepository {
     throw Exception('Error al obtener los oficios disponibles: $e');
   }
 }
+  // Método para obtener detalles de un técnico específico
+  Future<Tecnico> obtenerTecnicoPorId(String idTecnico) async {
+    try {
+      final response = await apiService.obtenerTecnicoPorId(idTecnico);
+      return response.tecnico; 
+    } catch (e) {
+      print("Error en el repositorio al obtener el técnico: $e");
+      rethrow;
+    }
+
+  }
+
 }

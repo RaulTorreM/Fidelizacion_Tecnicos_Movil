@@ -19,7 +19,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
 
   @override
   Widget build(BuildContext context) {
-    final profileBloc = Provider.of<PerfilBloc>(context);
+    final profileBloc = Provider.of<ProfileBloc>(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -74,14 +74,16 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                       newPasswordController.text,
                     );
 
-                    if (profileBloc.error == null) {
+                    if (profileBloc.message == 'Contraseña cambiada exitosamente') {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Contraseña cambiada exitosamente')),
+                        SnackBar(content: Text(profileBloc.message!)),
                       );
+                      profileBloc.clearMessage();  // Limpiar el mensaje después de mostrarlo
                     } else {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text(profileBloc.error!)),
+                        SnackBar(content: Text(profileBloc.message ?? 'Error desconocido')),
                       );
+                      profileBloc.clearMessage();  // Limpiar el mensaje después de mostrarlo
                     }
                   }
                 },
@@ -92,5 +94,13 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    currentPasswordController.dispose();
+    newPasswordController.dispose();
+    confirmPasswordController.dispose();
+    super.dispose();
   }
 }

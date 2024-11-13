@@ -22,20 +22,20 @@ class _ProfilePageState extends State<ProfilePage> {
   void initState() {
     super.initState();
     Future.microtask(() {
-      final profileBloc = Provider.of<PerfilBloc>(context, listen: false);
+      final profileBloc = Provider.of<ProfileBloc>(context, listen: false);
       profileBloc.fetchPerfil(widget.idTecnico);
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    final profileBloc = Provider.of<PerfilBloc>(context);
+    final profileBloc = Provider.of<ProfileBloc>(context);
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('Perfil del Técnico'),
       ),
-      body: Consumer<PerfilBloc>(
+      body: Consumer<ProfileBloc>(
         builder: (context, bloc, child) {
           if (bloc.isLoading) {
             return const Center(child: CircularProgressIndicator());
