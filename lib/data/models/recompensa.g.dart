@@ -6,11 +6,11 @@ part of 'recompensa.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-Recompensa _$RecompensaFromJson(Map<String, dynamic> json) => Recompensa(
+Recompensa _$RecompensaFromJson(Map json) => Recompensa(
       idRecompensa: json['idRecompensa'] as String,
       tipoRecompensa: json['tipoRecompensa'] as String,
       descripcionRecompensa: json['descripcionRecompensa'] as String,
-      costoPuntosRecompensa: (json['costoPuntosRecompensa'] as num).toInt(),
+      costoPuntos_Recompensa: (json['costoPuntos_Recompensa'] as num).toInt(),
     );
 
 Map<String, dynamic> _$RecompensaToJson(Recompensa instance) =>
@@ -18,5 +18,5 @@ Map<String, dynamic> _$RecompensaToJson(Recompensa instance) =>
       'idRecompensa': instance.idRecompensa,
       'tipoRecompensa': instance.tipoRecompensa,
       'descripcionRecompensa': instance.descripcionRecompensa,
-      'costoPuntosRecompensa': instance.costoPuntosRecompensa,
+      'costoPuntos_Recompensa': instance.costoPuntos_Recompensa,
     };

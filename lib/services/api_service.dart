@@ -8,6 +8,7 @@ import '../data/models/venta_intermediada.dart';
 import '../data/models/csrf_response.dart';
 import '../data/models/recompensa.dart';
 import '../data/models/tecnico_response.dart';
+import '../data/models/solicitud_canje.dart';
 
 part 'api_service.g.dart'; 
 
@@ -52,12 +53,6 @@ abstract class ApiService {
     @Field('newPassword') String newPassword
   );
 
-  @POST("/cambiar-oficio")
-  Future<Map<String, dynamic>> changeJob(
-    @Field('idTecnico') String idTecnico,
-    @Field('currentPassword') String password, 
-    @Field('newJob') String nuevoOficio 
-  );
 
   @PUT("/tecnico/{idTecnico}/oficios")
     Future<Map<String, dynamic>> updateJobs(
@@ -68,6 +63,10 @@ abstract class ApiService {
   @GET("/oficios")
   Future<List<Oficio>> getAvailableJobs();  
 
+  @POST("/solicitudes/canje")
+  Future<Map<String, dynamic>> guardarSolicitudCanje(
+    @Body() Map<String, dynamic> solicitudCanje,
+  );
 
 
 }

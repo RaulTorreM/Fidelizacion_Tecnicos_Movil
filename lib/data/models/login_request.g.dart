@@ -6,7 +6,7 @@ part of 'login_request.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-LoginRequest _$LoginRequestFromJson(Map<String, dynamic> json) => LoginRequest(
+LoginRequest _$LoginRequestFromJson(Map json) => LoginRequest(
       celularTecnico: json['celularTecnico'] as String,
       password: json['password'] as String,
     );

@@ -6,8 +6,7 @@ part of 'venta_intermediada.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-VentaIntermediada _$VentaIntermediadaFromJson(Map<String, dynamic> json) =>
-    VentaIntermediada(
+VentaIntermediada _$VentaIntermediadaFromJson(Map json) => VentaIntermediada(
       idVentaIntermediada: json['idVentaIntermediada'] as String,
       idTecnico: json['idTecnico'] as String,
       nombreTecnico: json['nombreTecnico'] as String,

@@ -93,7 +93,7 @@ class _RecompensasPageState extends State<RecompensasPage> {
             ),
             const SizedBox(height: 16),
             Text(
-              '${recompensa.costoPuntosRecompensa} Puntos',
+              '${recompensa.costoPuntos_Recompensa} Puntos',
               style: const TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,

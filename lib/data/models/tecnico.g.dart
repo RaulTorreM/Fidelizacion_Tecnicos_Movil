@@ -6,7 +6,7 @@ part of 'tecnico.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-Tecnico _$TecnicoFromJson(Map<String, dynamic> json) => Tecnico(
+Tecnico _$TecnicoFromJson(Map json) => Tecnico(
       idTecnico: json['idTecnico'] as String,
       nombreTecnico: json['nombreTecnico'] as String,
       celularTecnico: json['celularTecnico'] as String,
@@ -16,7 +16,7 @@ Tecnico _$TecnicoFromJson(Map<String, dynamic> json) => Tecnico(
       historicoPuntosTecnico: (json['historicoPuntos_Tecnico'] as num).toInt(),
       rangoTecnico: json['rangoTecnico'] as String?,
       oficios: (json['oficios'] as List<dynamic>)
-          .map((e) => Oficio.fromJson(e as Map<String, dynamic>))
+          .map((e) => Oficio.fromJson(Map<String, dynamic>.from(e as Map)))
           .toList(),
     );
 
@@ -31,7 +31,7 @@ Map<String, dynamic> _$TecnicoToJson(Tecnico instance) => <String, dynamic>{
       'oficios': instance.oficios,
     };
 
-Oficio _$OficioFromJson(Map<String, dynamic> json) => Oficio(
+Oficio _$OficioFromJson(Map json) => Oficio(
       idOficio: (json['idOficio'] as num).toInt(),
       nombreOficio: json['nombre_Oficio'] as String,
     );

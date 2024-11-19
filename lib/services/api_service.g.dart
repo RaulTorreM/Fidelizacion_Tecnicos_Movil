@@ -227,41 +227,6 @@ class _ApiService implements ApiService {
   }
 
   @override
-  Future<Map<String, dynamic>> changeJob(
-    String idTecnico,
-    String password,
-    String nuevoOficio,
-  ) async {
-    const _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{};
-    final _headers = <String, dynamic>{};
-    final _data = {
-      'idTecnico': idTecnico,
-      'currentPassword': password,
-      'newJob': nuevoOficio,
-    };
-    final _result = await _dio.fetch<Map<String, dynamic>>(
-        _setStreamType<Map<String, dynamic>>(Options(
-      method: 'POST',
-      headers: _headers,
-      extra: _extra,
-    )
-            .compose(
-              _dio.options,
-              '/cambiar-oficio',
-              queryParameters: queryParameters,
-              data: _data,
-            )
-            .copyWith(
-                baseUrl: _combineBaseUrls(
-              _dio.options.baseUrl,
-              baseUrl,
-            ))));
-    var value = _result.data!;
-    return value;
-  }
-
-  @override
   Future<Map<String, dynamic>> updateJobs(
     String idTecnico,
     Map<String, dynamic> requestBody,
@@ -318,6 +283,35 @@ class _ApiService implements ApiService {
     var value = _result.data!
         .map((dynamic i) => Oficio.fromJson(i as Map<String, dynamic>))
         .toList();
+    return value;
+  }
+
+  @override
+  Future<Map<String, dynamic>> guardarSolicitudCanje(
+      Map<String, dynamic> solicitudCanje) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    _data.addAll(solicitudCanje);
+    final _result = await _dio.fetch<Map<String, dynamic>>(
+        _setStreamType<Map<String, dynamic>>(Options(
+      method: 'POST',
+      headers: _headers,
+      extra: _extra,
+    )
+            .compose(
+              _dio.options,
+              '/solicitudes/canje',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(
+                baseUrl: _combineBaseUrls(
+              _dio.options.baseUrl,
+              baseUrl,
+            ))));
+    var value = _result.data!;
     return value;
   }
 

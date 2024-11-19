@@ -6,7 +6,7 @@ part of 'csrf_response.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-CsrfResponse _$CsrfResponseFromJson(Map<String, dynamic> json) => CsrfResponse(
+CsrfResponse _$CsrfResponseFromJson(Map json) => CsrfResponse(
       csrf_token: json['csrf_token'] as String,
     );
 

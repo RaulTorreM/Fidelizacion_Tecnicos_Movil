@@ -164,10 +164,10 @@ class _MenuPageState extends State<MenuPage> {
               );
             }),
             _buildMenuCard('Solicitar Canje', Icons.badge, () {
-              Navigator.push(
+              Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => SolicitudCanjePage(),
+                  builder: (context) => SolicitudCanjePage(idTecnico: widget.tecnico.idTecnico),
                 ),
               );
             }),

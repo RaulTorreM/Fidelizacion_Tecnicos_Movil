@@ -1,4 +1,3 @@
-// lib/logic/ventas_intermediadas_bloc.dart
 import 'package:flutter/material.dart';
 import '../data/models/venta_intermediada.dart';
 import '../data/repositories/venta_intermediada_repository.dart';

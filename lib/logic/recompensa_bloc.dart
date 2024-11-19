@@ -3,6 +3,8 @@ import '../../services/api_service.dart';
 import '../../data/models/recompensa.dart';
 
 class RecompensaBloc extends ChangeNotifier {
+  final ApiService apiService; // Agregar ApiService como propiedad
+
   List<Recompensa> _recompensas = [];
   bool _isLoading = false;
   String? _errorMessage;
@@ -11,12 +13,15 @@ class RecompensaBloc extends ChangeNotifier {
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
 
+  // Modificar el constructor para recibir ApiService
+  RecompensaBloc(this.apiService);
+
   Future<void> obtenerRecompensas() async {
     _isLoading = true;
     notifyListeners();
 
     try {
-      _recompensas = await ApiService.create().obtenerRecompensas();
+      _recompensas = await apiService.obtenerRecompensas();
       _errorMessage = null; // Limpiar errores
     } catch (error) {
       _errorMessage = 'Error al cargar recompensas: $error';

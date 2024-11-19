@@ -6,9 +6,9 @@ part of 'tecnico_response.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-TecnicoResponse _$TecnicoResponseFromJson(Map<String, dynamic> json) =>
-    TecnicoResponse(
-      tecnico: Tecnico.fromJson(json['tecnico'] as Map<String, dynamic>),
+TecnicoResponse _$TecnicoResponseFromJson(Map json) => TecnicoResponse(
+      tecnico:
+          Tecnico.fromJson(Map<String, dynamic>.from(json['tecnico'] as Map)),
     );
 
 Map<String, dynamic> _$TecnicoResponseToJson(TecnicoResponse instance) =>

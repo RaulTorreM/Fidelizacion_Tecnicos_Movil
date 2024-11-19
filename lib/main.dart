@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'ui/screens/home_page.dart';
+import 'logic/recompensa_bloc.dart';
 import 'logic/login_bloc.dart';
 import 'logic/profile_bloc.dart';
+import 'logic/venta_intermediada_bloc.dart';  // Corregido el nombre del archivo
 import 'data/repositories/perfil_repository.dart';
 import 'services/api_service.dart';
 
@@ -19,20 +21,21 @@ class MyApp extends StatelessWidget {
         Provider<ApiService>(create: (_) => ApiService.create()),
 
         // Proveedor para PerfilRepository
-        Provider<PerfilRepository>(
-          create: (context) => PerfilRepository(Provider.of<ApiService>(context, listen: false)),
-        ),
+        Provider<PerfilRepository>(create: (context) => PerfilRepository(Provider.of<ApiService>(context, listen: false))),
 
         // Proveedor para LoginBloc
-        ChangeNotifierProvider<LoginBloc>(
-          create: (context) => LoginBloc(Provider.of<ApiService>(context, listen: false)),
+        ChangeNotifierProvider<LoginBloc>(create: (context) => LoginBloc(Provider.of<ApiService>(context, listen: false))),
+
+        // Proveedor para VentasIntermediadasBloc (Cambio de ChangeNotifierProvider a Provider)
+        ChangeNotifierProvider<VentasIntermediadasBloc>(
+          create: (context) => VentasIntermediadasBloc(Provider.of<ApiService>(context, listen: false)),
         ),
 
-        // Proveedor para PerfilBloc
-        ChangeNotifierProvider<ProfileBloc>(
-        create: (context) => ProfileBloc(Provider.of<PerfilRepository>(context, listen: false)),
-      )
-      ,
+        // Proveedor para RecompensaBloc
+        ChangeNotifierProvider<RecompensaBloc>(create: (context) => RecompensaBloc(Provider.of<ApiService>(context, listen: false))),
+
+        // Proveedor para ProfileBloc
+        ChangeNotifierProvider<ProfileBloc>(create: (context) => ProfileBloc(Provider.of<PerfilRepository>(context, listen: false))),
       ],
       child: MaterialApp(
         title: 'Técnicos App',
