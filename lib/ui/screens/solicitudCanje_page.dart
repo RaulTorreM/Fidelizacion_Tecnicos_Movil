@@ -172,59 +172,69 @@ class _SolicitudCanjePageState extends State<SolicitudCanjePage> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text("Número de comprobante"),
-        TextField(
-          controller: _comprobanteController,
-          decoration: InputDecoration(
-            hintText: 'F001-00000000',
-            border: OutlineInputBorder(),
-            suffixIcon: Icon(Icons.clear),
-          ),
-          onChanged: _filterComprobantes,
-        ),
         _buildComprobantesDropdown(),
       ],
     );
   }
 
-  Widget _buildComprobantesDropdown() {
-      return FutureBuilder<List<VentaIntermediada>>(
-        future: _ventas,  // El Future que contiene la lista de ventas
-        builder: (context, snapshot) {
-          // Verificamos el estado de la respuesta
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return CircularProgressIndicator(); // Muestra un cargando mientras esperamos
-          }
-          if (snapshot.hasError) {
-            return Text('Error: ${snapshot.error}'); // Muestra un error si ocurre
-          }
+    Widget _buildComprobantesDropdown() {
+  return FutureBuilder<List<VentaIntermediada>>(
+    future: _ventas, // El Future que contiene la lista de ventas
+    builder: (context, snapshot) {
+      // Verificamos el estado de la respuesta
+      if (snapshot.connectionState == ConnectionState.waiting) {
+        return CircularProgressIndicator(); // Muestra un cargando mientras esperamos
+      }
+      if (snapshot.hasError) {
+        return Text('Error: ${snapshot.error}'); // Muestra un error si ocurre
+      }
 
-          // Si la llamada al Future fue exitosa, mostramos los datos
-          if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return Text("No hay ventas disponibles");  // Mensaje cuando no hay ventas
-          }
+      // Si la llamada al Future fue exitosa, mostramos los datos
+      if (!snapshot.hasData || snapshot.data!.isEmpty) {
+        return Text("No hay ventas disponibles"); // Mensaje cuando no hay ventas
+      }
 
-          // Usamos la lista de ventas que ya fue cargada
-          List<VentaIntermediada> ventas = snapshot.data!;
+      // Usamos la lista de ventas que ya fue cargada
+      List<VentaIntermediada> ventas = snapshot.data!;
 
-          return DropdownButton<VentaIntermediada>(
-            value: _selectedVenta,
-            items: ventas.map((VentaIntermediada venta) {
-              return DropdownMenuItem<VentaIntermediada>(
-                value: venta,
-                child: Text(venta.idVentaIntermediada), // Muestra la ID o cualquier propiedad de la venta
-              );
-            }).toList(),
-            onChanged: (VentaIntermediada? newValue) {
-              setState(() {
-                _selectedVenta = newValue;
-                _comprobanteController.text = newValue?.idVentaIntermediada ?? '';
-              });
-            },
-            hint: Text("Selecciona comprobante"),
+      return DropdownButton<VentaIntermediada>(
+        value: _selectedVenta,
+        items: ventas.map((VentaIntermediada venta) {
+          return DropdownMenuItem<VentaIntermediada>(
+            value: venta,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                // Muestra el ID de la venta
+                Text(
+                  venta.idVentaIntermediada,
+                  style: TextStyle(fontSize: 16), // Tamaño del texto
+                  overflow: TextOverflow.ellipsis, // Truncar texto largo con puntos suspensivos
+                ),
+                // Espacio entre el ID de venta y la fecha
+                SizedBox(width: 10),
+                // Muestra la fecha de emisión de la venta
+                Text(
+                  venta.fechaHoraEmision_VentaIntermediada,
+                  style: TextStyle(fontSize: 10, color: Colors.red),
+                ),
+              ],
+            ),
           );
+        }).toList(),
+        onChanged: (VentaIntermediada? newValue) {
+          setState(() {
+            _selectedVenta = newValue;
+            _comprobanteController.text = newValue?.idVentaIntermediada ?? '';
+          });
         },
+        hint: Text("Selecciona comprobante"),
       );
-    }
+    },
+  );
+}
+
+  
 
    // Widget para seleccionar la recompensa y cantidad
   Widget _buildRewardSelection() {
@@ -252,10 +262,23 @@ class _SolicitudCanjePageState extends State<SolicitudCanjePage> {
                   items: recompensasBloc.recompensas.map((recompensa) {
                     return DropdownMenuItem(
                       value: recompensa,
-                      child: Text(
-                        recompensa.descripcionRecompensa,
-                        style: TextStyle(fontSize: 16), // Aumentar tamaño de texto
-                      ),
+                      child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          child: Text(
+                            recompensa.descripcionRecompensa,
+                            style: TextStyle(fontSize: 16), // Tamaño del texto
+                            overflow: TextOverflow.ellipsis, // Truncar texto largo con puntos suspensivos
+                          ),
+                        ),
+                        SizedBox(width: 8), // Separador entre texto y puntos
+                        Text(
+                          '${recompensa.costoPuntos_Recompensa} pts',
+                          style: TextStyle(fontSize: 14, color: Colors.grey[700]), // Diseño del texto de los puntos
+                        ),
+                      ],
+                    ),               
                     );
                   }).toList(),
                   onChanged: (Recompensa? newValue) {
@@ -316,20 +339,43 @@ class _SolicitudCanjePageState extends State<SolicitudCanjePage> {
   // Función para agregar recompensa a la tabla
   void _addToTable() {
     if (_selectedRecompensa != null) {
+      final puntosRecompensa = _selectedRecompensa!.costoPuntos_Recompensa * _cantidadRecompensa;
+
+      // Validar si los puntos actuales permiten agregar la recompensa
+      final puntosRestantes = (_selectedVenta?.puntosActuales_VentaIntermediada ?? 0) - _puntosCanjeados;
+
+      if (puntosRecompensa > puntosRestantes) {
+        // Mostrar un mensaje de error si excede los puntos disponibles
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Las Recompensas a añadir exceden los puntos restantes.',
+              style: TextStyle(fontSize: 14), // Tamaño de texto más pequeño
+              textAlign: TextAlign.center, // Centrar el texto
+            ),
+            backgroundColor: Colors.red,
+            duration: Duration(seconds: 3), // Controlar el tiempo de visualización
+            behavior: SnackBarBehavior.floating, // Mostrar como un snackbar flotante
+            margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8), // Ajustar posición y márgenes
+          ),
+        );
+        return; // Salir de la función sin agregar la recompensa
+      }
+
       setState(() {
-        // Agregar la recompensa a la tabla con su cantidad y el costo total
+        // Agregar la recompensa a la tabla
         _recompensasAgregadas.add({
-          'idRecompensa': _selectedRecompensa!.idRecompensa,  
-          'descripcionRecompensa': _selectedRecompensa!.descripcionRecompensa,  
-          'cantidad': _cantidadRecompensa,  
-          'puntos': _selectedRecompensa!.costoPuntos_Recompensa * _cantidadRecompensa,  
+          'idRecompensa': _selectedRecompensa!.idRecompensa,
+          'descripcionRecompensa': _selectedRecompensa!.descripcionRecompensa,
+          'cantidad': _cantidadRecompensa,
+          'puntos': puntosRecompensa,
         });
 
         // Actualizar los puntos canjeados
-        _puntosCanjeados += _selectedRecompensa!.costoPuntos_Recompensa * _cantidadRecompensa;
+        _puntosCanjeados += puntosRecompensa;
       });
     }
-  }
+}
 
 
 
@@ -453,6 +499,8 @@ class _SolicitudCanjePageState extends State<SolicitudCanjePage> {
       // Limpiar las recompensas agregadas y los puntos canjeados
       _recompensasAgregadas.clear();
       _puntosCanjeados = 0;
+      _comprobanteController.clear();
+      _selectedVenta = null;
     });
   }
 
@@ -504,8 +552,8 @@ class _SolicitudCanjePageState extends State<SolicitudCanjePage> {
         );
       }
     });
-}
-
+    
+  }
 
 
 
