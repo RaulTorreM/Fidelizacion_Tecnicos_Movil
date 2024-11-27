@@ -8,11 +8,13 @@ class SolicitudCanje {
   final String idVentaIntermediada;
   final String idTecnico;
   final List<SolicitudCanjeRecompensa> recompensas;
+  final int puntosCanjeados_SolicitudCanje;
 
   SolicitudCanje({
     required this.idVentaIntermediada,
     required this.idTecnico,
     required this.recompensas,
+    required this.puntosCanjeados_SolicitudCanje,
   });
 
   factory SolicitudCanje.fromJson(Map<String, dynamic> json) =>

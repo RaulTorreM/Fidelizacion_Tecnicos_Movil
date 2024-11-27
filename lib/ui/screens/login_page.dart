@@ -13,7 +13,7 @@ class LoginPage extends StatelessWidget {
   Future<void> _testApiConnection(BuildContext context) async {
     final dio = Dio(); // Crea una instancia de Dio
     try {
-      final response = await dio.get("http://192.168.137.129/FidelizacionTecnicos/public/api/loginmovil/login-DataTecnicos");
+      final response = await dio.get("http://192.168.0.15/FidelizacionTecnicos/public/api/loginmovil/login-DataTecnicos");
 
       if (response.statusCode == 200) {
         if (response.data is List) {

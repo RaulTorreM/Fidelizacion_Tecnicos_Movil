@@ -13,6 +13,8 @@ SolicitudCanje _$SolicitudCanjeFromJson(Map json) => SolicitudCanje(
           .map((e) => SolicitudCanjeRecompensa.fromJson(
               Map<String, dynamic>.from(e as Map)))
           .toList(),
+      puntosCanjeados_SolicitudCanje:
+          (json['puntosCanjeados_SolicitudCanje'] as num).toInt(),
     );
 
 Map<String, dynamic> _$SolicitudCanjeToJson(SolicitudCanje instance) =>
@@ -20,4 +22,5 @@ Map<String, dynamic> _$SolicitudCanjeToJson(SolicitudCanje instance) =>
       'idVentaIntermediada': instance.idVentaIntermediada,
       'idTecnico': instance.idTecnico,
       'recompensas': instance.recompensas,
+      'puntosCanjeados_SolicitudCanje': instance.puntosCanjeados_SolicitudCanje,
     };

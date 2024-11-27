@@ -215,8 +215,8 @@ class _SolicitudCanjePageState extends State<SolicitudCanjePage> {
                 SizedBox(width: 10),
                 // Muestra la fecha de emisión de la venta
                 Text(
-                  venta.fechaHoraEmision_VentaIntermediada,
-                  style: TextStyle(fontSize: 10, color: Colors.red),
+                  "  "+ venta.puntosActuales_VentaIntermediada.toString()+ " Pts",
+                  style: TextStyle(fontSize: 16, color: Colors.red),
                 ),
               ],
             ),
@@ -501,6 +501,8 @@ class _SolicitudCanjePageState extends State<SolicitudCanjePage> {
       _puntosCanjeados = 0;
       _comprobanteController.clear();
       _selectedVenta = null;
+      _selectedRecompensa = null;
+      _cantidadRecompensa = 1;
     });
   }
 
@@ -526,11 +528,12 @@ class _SolicitudCanjePageState extends State<SolicitudCanjePage> {
       idVentaIntermediada: _selectedVenta!.idVentaIntermediada,
       idTecnico: widget.idTecnico,
       recompensas: recompensas,
+      puntosCanjeados_SolicitudCanje : _puntosCanjeados
     );
 
     // Depurar el JSON antes de enviarlo
-  final jsonData = solicitudCanje.toJson();
-  print('JSON enviado: ${json.encode(jsonData)}');
+    final jsonData = solicitudCanje.toJson();
+    print('JSON enviado: ${json.encode(jsonData)}');
 
     // Llamar al Bloc para guardar la solicitud
     solicitudCanjeBloc.guardarSolicitudCanje(solicitudCanje);
