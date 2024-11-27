@@ -68,6 +68,12 @@ abstract class ApiService {
     @Body() Map<String, dynamic> solicitudCanje,
   );
 
+  @GET("/solicitudes-canje/{idTecnico}")
+  Future<List<SolicitudCanje>> obtenerSolicitudesCanje(@Path("idTecnico") String idTecnico);
+
+  @GET("/solicitudes-canje/{idSolicitud}/detalles")
+  Future<SolicitudCanje> obtenerSolicitudCanjeDetalles(@Path("idSolicitud") String idSolicitud);
+
 
 }
 

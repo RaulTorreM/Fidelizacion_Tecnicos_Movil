@@ -535,8 +535,16 @@ class _SolicitudCanjePageState extends State<SolicitudCanjePage> {
     final jsonData = solicitudCanje.toJson();
     print('JSON enviado: ${json.encode(jsonData)}');
 
+    // Mostrar un indicador de carga mientras se envía la solicitud
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (_) => Center(child: CircularProgressIndicator()),
+      );
+
     // Llamar al Bloc para guardar la solicitud
     solicitudCanjeBloc.guardarSolicitudCanje(solicitudCanje);
+
 
     // Escuchar el estado del Bloc para manejar los resultados
     solicitudCanjeBloc.state.listen((state) {
@@ -555,6 +563,7 @@ class _SolicitudCanjePageState extends State<SolicitudCanjePage> {
         );
       }
     });
+    Navigator.pop(context);
     
   }
 

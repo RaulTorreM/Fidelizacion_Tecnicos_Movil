@@ -4,6 +4,7 @@ import 'historialVentas_page.dart';
 import '../../data/models/tecnico.dart';
 import '../screens/recompensas_page.dart'; 
 import '../screens/solicitudCanje_page.dart'; 
+import '../screens/verSolicitudesCanje_page.dart'; 
 import '../../logic/login_bloc.dart';
 import 'package:provider/provider.dart';
 import 'home_page.dart'; 
@@ -164,10 +165,18 @@ class _MenuPageState extends State<MenuPage> {
               );
             }),
             _buildMenuCard('Solicitar Canje', Icons.badge, () {
-              Navigator.pushReplacement(
+              Navigator.push(
                 context,
                 MaterialPageRoute(
                   builder: (context) => SolicitudCanjePage(idTecnico: widget.tecnico.idTecnico),
+                ),
+              );
+            }),
+            _buildMenuCard('Ver Solicitudes', Icons.queue_play_next, () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => VerSolicitudesCanjePage(idTecnico: widget.tecnico.idTecnico),
                 ),
               );
             }),
