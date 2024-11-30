@@ -1,5 +1,9 @@
+import 'dart:convert';
+
 import '../../services/api_service.dart';
 import '../models/solicitud_canje.dart';
+import '../models/solicitud_canje_detalle.dart';
+import '../models/solicitud_canje_resumen.dart';
 
 
 class SolicitudCanjeRepository {
@@ -14,27 +18,28 @@ class SolicitudCanjeRepository {
       throw Exception('Error al guardar la solicitud de canje: $e');
     }
   }
-  Future<List<SolicitudCanje>> obtenerSolicitudesCanje(String idTecnico) async {
-    try {
-      // Realizar la llamada a la API a través de ApiService
-      final solicitudes = await apiService.obtenerSolicitudesCanje(idTecnico);
-      
-      // Imprimir las solicitudes obtenidas para depuración
-      print("Solicitudes obtenidas: $solicitudes");
 
+  Future<List<SolicitudCanjeResumen>> obtenerSolicitudesCanjeResumen(String idTecnico) async {
+    try {
+      final solicitudes = await apiService.obtenerSolicitudesCanje(idTecnico);
+      print('Solicitudes obtenidas (resumen): ${json.encode(solicitudes)}');
       return solicitudes;
     } catch (e) {
-      print("Error al obtener solicitudes de canje: $e");
+      print("Error al obtener solicitudes de canje (resumen): $e");
       throw Exception('Error al obtener las solicitudes de canje: $e');
     }
   }
 
-
-  Future<SolicitudCanje> obtenerSolicitudCanjeDetalles(String idSolicitud) async {
+  Future<SolicitudCanjeDetalle> obtenerSolicitudCanjeDetalles(String idSolicitud) async {
     try {
-      return await apiService.obtenerSolicitudCanjeDetalles(idSolicitud);
+      final detalles = await apiService.obtenerSolicitudCanjeDetalles(idSolicitud);
+      print('Detalles obtenidos (resumen): ${json.encode(detalles)}');
+      return detalles;
     } catch (e) {
+      print("Error al obtener los detalles de la solicitud de canje: $e");
       throw Exception('Error al obtener los detalles de la solicitud de canje: $e');
     }
   }
+
 }
+

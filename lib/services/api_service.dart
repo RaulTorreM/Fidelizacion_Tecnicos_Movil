@@ -1,4 +1,5 @@
 
+
 import 'package:retrofit/retrofit.dart';
 import 'package:dio/dio.dart';
 import '../data/models/login_request.dart' ; // Importar desde models
@@ -8,19 +9,22 @@ import '../data/models/venta_intermediada.dart';
 import '../data/models/csrf_response.dart';
 import '../data/models/recompensa.dart';
 import '../data/models/tecnico_response.dart';
-import '../data/models/solicitud_canje.dart';
+import '../data/models/solicitud_canje_detalle.dart';
+import '../data/models/solicitud_canje_resumen.dart';
 
 part 'api_service.g.dart'; 
 
 @RestApi(baseUrl: "http://192.168.0.15/FidelizacionTecnicos/public/api/")
 abstract class ApiService {
-  factory ApiService(Dio dio, {String baseUrl}) = _ApiService;
+  factory ApiService(Dio dio, {String? baseUrl}) = _ApiService;
 
   static ApiService create() {
     final dio = Dio();
     dio.options.connectTimeout = Duration(seconds: 5);
     dio.options.receiveTimeout = Duration(seconds: 3);
-    
+
+
+
     // Configurar encabezados globales si es necesario
     dio.options.headers["Content-Type"] = "application/json";
     
@@ -69,10 +73,10 @@ abstract class ApiService {
   );
 
   @GET("/solicitudes-canje/{idTecnico}")
-  Future<List<SolicitudCanje>> obtenerSolicitudesCanje(@Path("idTecnico") String idTecnico);
+  Future<List<SolicitudCanjeResumen>> obtenerSolicitudesCanje(@Path("idTecnico") String idTecnico);
 
   @GET("/solicitudes-canje/{idSolicitud}/detalles")
-  Future<SolicitudCanje> obtenerSolicitudCanjeDetalles(@Path("idSolicitud") String idSolicitud);
+  Future<SolicitudCanjeDetalle> obtenerSolicitudCanjeDetalles(@Path("idSolicitud") String idSolicitud);
 
 
 }

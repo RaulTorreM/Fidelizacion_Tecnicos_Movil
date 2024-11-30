@@ -7,9 +7,19 @@ import 'logic/profile_bloc.dart';
 import 'logic/venta_intermediada_bloc.dart';  // Corregido el nombre del archivo
 import 'data/repositories/perfil_repository.dart';
 import 'services/api_service.dart';
+import 'dart:io';
 
 void main() {
+  HttpOverrides.global = MyHttpOverrides();
   runApp(MyApp());
+}
+
+ class MyHttpOverrides extends HttpOverrides{
+  @override
+  HttpClient createHttpClient(SecurityContext? context){
+    return super.createHttpClient(context)
+      ..badCertificateCallback = (X509Certificate cert, String host, int port)=> true;
+  }
 }
 
 class MyApp extends StatelessWidget {

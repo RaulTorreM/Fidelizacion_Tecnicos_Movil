@@ -1,17 +1,19 @@
 import 'dart:async';
+import 'dart:convert';
 
 import '../data/repositories/solicitudcanje_repository.dart';
 import '../data/models/solicitud_canje.dart';
+import '../data/models/solicitud_canje_resumen.dart';
+import '../data/models/solicitud_canje_detalle.dart';
 
 class SolicitudCanjeBloc {
   final SolicitudCanjeRepository solicitudCanjeRepository;
 
-  // Controladores para los estados
   final _stateController = StreamController<SolicitudCanjeState>.broadcast();
-  final _solicitudesController = StreamController<List<SolicitudCanje>>.broadcast();
+  final _solicitudesController = StreamController<List<SolicitudCanjeResumen>>.broadcast();
 
   Stream<SolicitudCanjeState> get state => _stateController.stream;
-  Stream<List<SolicitudCanje>> get solicitudesStream => _solicitudesController.stream;
+  Stream<List<SolicitudCanjeResumen>> get solicitudesStream => _solicitudesController.stream;
 
   SolicitudCanjeBloc({required this.solicitudCanjeRepository});
 
@@ -20,32 +22,33 @@ class SolicitudCanjeBloc {
     try {
       await solicitudCanjeRepository.guardarSolicitudCanje(solicitudCanje);
       _stateController.add(SolicitudCanjeSuccess());
-    } on Exception catch (e) {
-      _stateController.add(SolicitudCanjeFailure('Fallo al guardar: ${e.toString()}'));
+    } catch (e) {
+      _stateController.add(SolicitudCanjeFailure('Error al guardar la solicitud: $e'));
     }
   }
 
   void obtenerSolicitudesCanje(String idTecnico) async {
     _stateController.add(SolicitudCanjeLoading());
     try {
-      List<SolicitudCanje> solicitudes = await solicitudCanjeRepository.obtenerSolicitudesCanje(idTecnico);
+      final solicitudes = await solicitudCanjeRepository.obtenerSolicitudesCanjeResumen(idTecnico);
       _solicitudesController.add(solicitudes);
       _stateController.add(SolicitudCanjeSuccess());
-    } on Exception catch (e) {
-      _stateController.add(SolicitudCanjeFailure('Fallo al obtener las solicitudes: ${e.toString()}'));
+    } catch (e) {
+      _stateController.add(SolicitudCanjeFailure('Error al obtener las solicitudes: $e'));
     }
   }
 
   void obtenerSolicitudCanjeDetalles(String idSolicitud) async {
-    _stateController.add(SolicitudCanjeLoading());
-    try {
-      SolicitudCanje solicitud = await solicitudCanjeRepository.obtenerSolicitudCanjeDetalles(idSolicitud);
-      // Aquí podrías hacer algo con los detalles de la solicitud, como enviarlos a la UI.
-      _stateController.add(SolicitudCanjeDetallesSuccess(solicitud)); // Emitimos el éxito con los detalles
-    } on Exception catch (e) {
-      _stateController.add(SolicitudCanjeFailure('Fallo al obtener los detalles: ${e.toString()}'));
+  try {
+    final detalles = await solicitudCanjeRepository.obtenerSolicitudCanjeDetalles(idSolicitud);
+    print('Detalles obtenidos: ${json.encode(detalles)}');
+    _stateController.add(SolicitudCanjeDetallesSuccess(detalles));
+    } catch (e) {
+      print('Error al obtener los detalles: $e');
+      _stateController.add(SolicitudCanjeFailure('Error al obtener los detalles: $e'));
     }
   }
+
 
 
 
@@ -65,11 +68,15 @@ class SolicitudCanjeLoading extends SolicitudCanjeState {}
 
 class SolicitudCanjeSuccess extends SolicitudCanjeState {}
 
-class SolicitudCanjeDetallesSuccess extends SolicitudCanjeState {
-  final SolicitudCanje solicitudCanje;
 
-  SolicitudCanjeDetallesSuccess(this.solicitudCanje);
+class SolicitudCanjeDetallesSuccess extends SolicitudCanjeState {
+  final SolicitudCanjeDetalle detalles;
+
+  SolicitudCanjeDetallesSuccess(this.detalles);
+
+  get solicitudCanje => null;
 }
+
 
 
 class SolicitudCanjeFailure extends SolicitudCanjeState {

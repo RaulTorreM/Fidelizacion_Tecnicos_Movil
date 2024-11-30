@@ -316,13 +316,14 @@ class _ApiService implements ApiService {
   }
 
   @override
-  Future<List<SolicitudCanje>> obtenerSolicitudesCanje(String idTecnico) async {
+  Future<List<SolicitudCanjeResumen>> obtenerSolicitudesCanje(
+      String idTecnico) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
     final Map<String, dynamic>? _data = null;
-    final _result = await _dio
-        .fetch<List<dynamic>>(_setStreamType<List<SolicitudCanje>>(Options(
+    final _result = await _dio.fetch<List<dynamic>>(
+        _setStreamType<List<SolicitudCanjeResumen>>(Options(
       method: 'GET',
       headers: _headers,
       extra: _extra,
@@ -339,20 +340,21 @@ class _ApiService implements ApiService {
               baseUrl,
             ))));
     var value = _result.data!
-        .map((dynamic i) => SolicitudCanje.fromJson(i as Map<String, dynamic>))
+        .map((dynamic i) =>
+            SolicitudCanjeResumen.fromJson(i as Map<String, dynamic>))
         .toList();
     return value;
   }
 
   @override
-  Future<SolicitudCanje> obtenerSolicitudCanjeDetalles(
+  Future<SolicitudCanjeDetalle> obtenerSolicitudCanjeDetalles(
       String idSolicitud) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
     final Map<String, dynamic>? _data = null;
-    final _result = await _dio
-        .fetch<Map<String, dynamic>>(_setStreamType<SolicitudCanje>(Options(
+    final _result = await _dio.fetch<Map<String, dynamic>>(
+        _setStreamType<SolicitudCanjeDetalle>(Options(
       method: 'GET',
       headers: _headers,
       extra: _extra,
@@ -368,7 +370,7 @@ class _ApiService implements ApiService {
               _dio.options.baseUrl,
               baseUrl,
             ))));
-    final value = SolicitudCanje.fromJson(_result.data!);
+    final value = SolicitudCanjeDetalle.fromJson(_result.data!);
     return value;
   }
 
