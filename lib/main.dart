@@ -27,6 +27,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
+        //Página de Recompensas
+        ChangeNotifierProvider(create: (_) => RecompensaBloc(ApiService.create())),
         // Proveedor para ApiService
         Provider<ApiService>(create: (_) => ApiService.create()),
 

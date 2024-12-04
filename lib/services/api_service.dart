@@ -76,7 +76,7 @@ abstract class ApiService {
   Future<List<SolicitudCanjeResumen>> obtenerSolicitudesCanje(@Path("idTecnico") String idTecnico);
 
   @GET("/solicitudes-canje/{idSolicitud}/detalles")
-  Future<SolicitudCanjeDetalle> obtenerSolicitudCanjeDetalles(@Path("idSolicitud") String idSolicitud);
+  Future<SolicitudCanjeDetalles> obtenerSolicitudCanjeDetalles(@Path("idSolicitud") String idSolicitud);
 
 
 }

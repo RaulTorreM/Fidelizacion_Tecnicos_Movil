@@ -11,6 +11,7 @@ Recompensa _$RecompensaFromJson(Map json) => Recompensa(
       tipoRecompensa: json['tipoRecompensa'] as String,
       descripcionRecompensa: json['descripcionRecompensa'] as String,
       costoPuntos_Recompensa: (json['costoPuntos_Recompensa'] as num).toInt(),
+      stock_Recompensa: (json['stock_Recompensa'] as num).toInt(),
     );
 
 Map<String, dynamic> _$RecompensaToJson(Recompensa instance) =>
@@ -19,4 +20,5 @@ Map<String, dynamic> _$RecompensaToJson(Recompensa instance) =>
       'tipoRecompensa': instance.tipoRecompensa,
       'descripcionRecompensa': instance.descripcionRecompensa,
       'costoPuntos_Recompensa': instance.costoPuntos_Recompensa,
+      'stock_Recompensa': instance.stock_Recompensa,
     };

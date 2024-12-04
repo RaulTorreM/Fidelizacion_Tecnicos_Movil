@@ -30,7 +30,7 @@ class SolicitudCanjeRepository {
     }
   }
 
-  Future<SolicitudCanjeDetalle> obtenerSolicitudCanjeDetalles(String idSolicitud) async {
+  Future<SolicitudCanjeDetalles> obtenerSolicitudCanjeDetalles(String idSolicitud) async {
     try {
       final detalles = await apiService.obtenerSolicitudCanjeDetalles(idSolicitud);
       print('Detalles obtenidos (resumen): ${json.encode(detalles)}');

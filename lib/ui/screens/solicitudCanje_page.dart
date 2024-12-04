@@ -67,6 +67,11 @@ class _SolicitudCanjePageState extends State<SolicitudCanjePage> {
     return ventas.where((venta) => venta.idEstadoVenta == 1 || venta.idEstadoVenta == 2).toList();
   }
 
+  String obtenerNumeroSolicitud(String idSolicitudCanje) {
+    // Divide la cadena por el guion "-" y toma la última parte
+    return idSolicitudCanje.split('-').last;
+  }
+
   @override
   void dispose() {
     solicitudCanjeBloc.dispose();
@@ -191,7 +196,7 @@ class _SolicitudCanjePageState extends State<SolicitudCanjePage> {
 
       // Si la llamada al Future fue exitosa, mostramos los datos
       if (!snapshot.hasData || snapshot.data!.isEmpty) {
-        return Text("No hay ventas disponibles"); // Mensaje cuando no hay ventas
+        return Text("No hay comprobantes Disponibles"); // Mensaje cuando no hay ventas
       }
 
       // Usamos la lista de ventas que ya fue cargada
@@ -207,7 +212,7 @@ class _SolicitudCanjePageState extends State<SolicitudCanjePage> {
               children: [
                 // Muestra el ID de la venta
                 Text(
-                  venta.idVentaIntermediada,
+                  'N° : ' +obtenerNumeroSolicitud(venta.idVentaIntermediada),
                   style: TextStyle(fontSize: 16), // Tamaño del texto
                   overflow: TextOverflow.ellipsis, // Truncar texto largo con puntos suspensivos
                 ),
@@ -235,8 +240,6 @@ class _SolicitudCanjePageState extends State<SolicitudCanjePage> {
 }
 
   
-
-   // Widget para seleccionar la recompensa y cantidad
   Widget _buildRewardSelection() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -252,6 +255,9 @@ class _SolicitudCanjePageState extends State<SolicitudCanjePage> {
               return Text('Error: ${recompensasBloc.errorMessage}');
             }
 
+            // Validar si hay un comprobante seleccionado
+            final isDropdownEnabled = _selectedVenta != null;
+
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -259,48 +265,66 @@ class _SolicitudCanjePageState extends State<SolicitudCanjePage> {
                 DropdownButton<Recompensa>(
                   isExpanded: true, // Hace que el Dropdown ocupe todo el espacio horizontal
                   value: _selectedRecompensa,
-                  items: recompensasBloc.recompensas.map((recompensa) {
-                    return DropdownMenuItem(
-                      value: recompensa,
-                      child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Expanded(
-                          child: Text(
-                            recompensa.descripcionRecompensa,
-                            style: TextStyle(fontSize: 16), // Tamaño del texto
-                            overflow: TextOverflow.ellipsis, // Truncar texto largo con puntos suspensivos
-                          ),
-                        ),
-                        SizedBox(width: 8), // Separador entre texto y puntos
-                        Text(
-                          '${recompensa.costoPuntos_Recompensa} pts',
-                          style: TextStyle(fontSize: 14, color: Colors.grey[700]), // Diseño del texto de los puntos
-                        ),
-                      ],
-                    ),               
-                    );
-                  }).toList(),
-                  onChanged: (Recompensa? newValue) {
-                    setState(() {
-                      _selectedRecompensa = newValue;
-                    });
-                  },
-                  hint: Text("Selecciona recompensa"),
+                  items: isDropdownEnabled
+                      ? recompensasBloc.recompensas.map((recompensa) {
+                          return DropdownMenuItem(
+                            value: recompensa,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    recompensa.descripcionRecompensa,
+                                    style: TextStyle(fontSize: 16),
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                                SizedBox(width: 8),
+                                Text(
+                                  '${recompensa.costoPuntos_Recompensa} pts',
+                                  style: TextStyle(fontSize: 14, color: Colors.grey[700]),
+                                ),
+                                SizedBox(width: 8),
+                                Text(
+                                'Stock: ${recompensa.stock_Recompensa}', // Mostrar stock
+                                style: TextStyle(fontSize: 14, color: Colors.green),
+                              ),
+                              ],
+                            ),
+                          );
+                        }).toList()
+                      : null,
+                  onChanged: isDropdownEnabled
+                      ? (Recompensa? newValue) {
+                          setState(() {
+                            _selectedRecompensa = newValue;
+                          });
+                        }
+                      : null,
+                  hint: isDropdownEnabled
+                      ? Text("Selecciona recompensa")
+                      : Text("Debes seleccionar un comprobante",
+                          style: TextStyle(color: Colors.red)),
+                  disabledHint: Text(
+                    "Debes seleccionar un comprobante",
+                    style: TextStyle(color: Colors.red, fontSize: 14),
+                  ),
                 ),
-                SizedBox(height: 16), // Espacio entre el dropdown y la cantidad
+                SizedBox(height: 16),
                 // Sección para la cantidad de recompensa
                 Row(
                   children: [
                     SizedBox(width: 8),
                     Text("Cantidad"),
                     IconButton(
-                      onPressed: () {
-                        setState(() {
-                          // Lógica para disminuir la cantidad
-                          _cantidadRecompensa = (_cantidadRecompensa > 1) ? _cantidadRecompensa - 1 : 1;
-                        });
-                      },
+                      onPressed: isDropdownEnabled
+                          ? () {
+                              setState(() {
+                                _cantidadRecompensa =
+                                    (_cantidadRecompensa > 1) ? _cantidadRecompensa - 1 : 1;
+                              });
+                            }
+                          : null,
                       icon: Icon(Icons.remove),
                     ),
                     Container(
@@ -309,21 +333,24 @@ class _SolicitudCanjePageState extends State<SolicitudCanjePage> {
                         border: Border.all(),
                         borderRadius: BorderRadius.circular(4),
                       ),
-                      child: Text('$_cantidadRecompensa'), // Muestra la cantidad seleccionada
+                      child: Text('$_cantidadRecompensa'),
                     ),
                     IconButton(
-                      onPressed: () {
-                        setState(() {
-                          // Lógica para aumentar la cantidad
-                          _cantidadRecompensa++;
-                        });
-                      },
+                      onPressed: isDropdownEnabled
+                          ? () {
+                              setState(() {
+                                _cantidadRecompensa++;
+                              });
+                            }
+                          : null,
                       icon: Icon(Icons.add),
                     ),
                     SizedBox(width: 16),
                     // Botón para agregar a la tabla
                     ElevatedButton(
-                      onPressed: _selectedRecompensa != null ? _addToTable : null,
+                      onPressed: isDropdownEnabled && _selectedRecompensa != null
+                          ? _addToTable
+                          : null,
                       child: Text("Añadir"),
                     ),
                   ],
@@ -335,6 +362,8 @@ class _SolicitudCanjePageState extends State<SolicitudCanjePage> {
       ],
     );
   }
+
+  
 
   // Función para agregar recompensa a la tabla
   void _addToTable() {
@@ -362,20 +391,54 @@ class _SolicitudCanjePageState extends State<SolicitudCanjePage> {
         return; // Salir de la función sin agregar la recompensa
       }
 
+      // Validar si el stock es suficiente
+      if (_selectedRecompensa!.stock_Recompensa < _cantidadRecompensa) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('No hay suficiente stock para añadir esta recompensa.'),
+            backgroundColor: Colors.red,
+          ),
+        );
+        return;
+      }
+
       setState(() {
-        // Agregar la recompensa a la tabla
-        _recompensasAgregadas.add({
-          'idRecompensa': _selectedRecompensa!.idRecompensa,
-          'descripcionRecompensa': _selectedRecompensa!.descripcionRecompensa,
-          'cantidad': _cantidadRecompensa,
-          'puntos': puntosRecompensa,
-        });
+        // Buscar si la recompensa ya está agregada
+        final index = _recompensasAgregadas.indexWhere(
+          (item) => item['idRecompensa'] == _selectedRecompensa!.idRecompensa,
+        );
+
+        if (index != -1) {
+          // Si ya está agregada, actualizar la cantidad y puntos
+          final recompensaExistente = _recompensasAgregadas[index];
+          // Validar si el stock es suficiente
+          if (_selectedRecompensa!.stock_Recompensa < recompensaExistente['cantidad']+_cantidadRecompensa) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('No hay suficiente stock para añadir esta recompensa.'),
+                backgroundColor: Colors.red,
+              ),
+            );
+            return;
+          }
+          recompensaExistente['cantidad'] += _cantidadRecompensa;
+          recompensaExistente['puntos'] += puntosRecompensa;
+        } else {
+          // Si no está, agregar una nueva recompensa
+          _recompensasAgregadas.add({
+            'idRecompensa': _selectedRecompensa!.idRecompensa,
+            'descripcionRecompensa': _selectedRecompensa!.descripcionRecompensa,
+            'cantidad': _cantidadRecompensa,
+            'puntos': puntosRecompensa,
+          });
+        }
 
         // Actualizar los puntos canjeados
         _puntosCanjeados += puntosRecompensa;
       });
     }
-}
+  }
+
 
 
 
@@ -567,9 +630,4 @@ class _SolicitudCanjePageState extends State<SolicitudCanjePage> {
     
   }
 
-
-
-  void _filterComprobantes(String query) {
-    // Filtrar comprobantes
-  }
 }

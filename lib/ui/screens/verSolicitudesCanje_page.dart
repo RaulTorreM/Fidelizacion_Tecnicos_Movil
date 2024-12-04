@@ -24,7 +24,7 @@ class _VerSolicitudesCanjePageState extends State<VerSolicitudesCanjePage> {
     solicitudCanjeBloc = SolicitudCanjeBloc(
       solicitudCanjeRepository: SolicitudCanjeRepository(apiService: ApiService.create()),
     );
-    solicitudCanjeBloc.obtenerSolicitudesCanje(widget.idTecnico); // Llama al método para obtener solicitudes
+    solicitudCanjeBloc.obtenerSolicitudesCanje(widget.idTecnico); 
   }
 
   @override
@@ -32,6 +32,12 @@ class _VerSolicitudesCanjePageState extends State<VerSolicitudesCanjePage> {
     solicitudCanjeBloc.dispose(); // Libera recursos
     super.dispose();
   }
+  String obtenerNumeroSolicitud(String idSolicitudCanje) {
+    // Divide la cadena por el guion "-" y toma la última parte
+    return idSolicitudCanje.split('-').last;
+  }
+  
+
 
   @override
   Widget build(BuildContext context) {
@@ -40,7 +46,6 @@ class _VerSolicitudesCanjePageState extends State<VerSolicitudesCanjePage> {
       body: StreamBuilder<SolicitudCanjeState>(
         stream: solicitudCanjeBloc.state,
         builder: (context, snapshot) {
-          // Verifica los diferentes estados
           if (snapshot.data is SolicitudCanjeLoading) {
             return Center(child: CircularProgressIndicator());
           }
@@ -62,32 +67,7 @@ class _VerSolicitudesCanjePageState extends State<VerSolicitudesCanjePage> {
                 itemCount: solicitudes.length,
                 itemBuilder: (context, index) {
                   final solicitud = solicitudes[index];
-                  return Card(
-                    margin: EdgeInsets.all(10),
-                    child: ListTile(
-                      leading: Icon(Icons.card_giftcard, color: Colors.blue),
-                      title: Text('Solicitud: ${solicitud.idVentaIntermediada}'),
-                      subtitle: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                              'Estado: ${solicitudes[index].nombre_EstadoSolicitudCanje ?? "Desconocido"}'),
-                          Text(
-                              'Fecha: ${solicitudes[index].fechaHora_SolicitudCanje ?? "No disponible"}'),
-                        ],
-                      ),
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => SolicitudCanjeDetallesPage(
-                              idSolicitud: solicitud.idSolicitudCanje,
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                  );
+                  return _buildSolicitudCard(solicitud);
                 },
               );
             },
@@ -95,5 +75,82 @@ class _VerSolicitudesCanjePageState extends State<VerSolicitudesCanjePage> {
         },
       ),
     );
+  }
+
+  Widget _buildSolicitudCard(SolicitudCanjeResumen solicitud) {
+    final color = _getCardColor(solicitud.nombre_EstadoSolicitudCanje);
+    final icon = _getCardIcon(solicitud.nombre_EstadoSolicitudCanje);
+
+    return Card(
+      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      color: color.withOpacity(0.2),
+      child: ListTile(
+        leading: Icon(icon, color: color),
+        title: Text(
+          'Solicitud: N° ${obtenerNumeroSolicitud(solicitud.idSolicitudCanje)}',
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: Colors.black87,
+          ),
+        ),
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              solicitud.nombre_EstadoSolicitudCanje ?? 'Desconocido',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                color: color,
+              ),
+            ),
+            SizedBox(height: 4),
+            Row(
+              children: [
+                Icon(Icons.calendar_today, size: 14, color: Colors.grey),
+                SizedBox(width: 4),
+                Text(
+                  solicitud.fechaHora_SolicitudCanje ?? 'No disponible',
+                  style: TextStyle(fontSize: 14, color: const Color.fromARGB(255, 0, 0, 0)),
+                ),
+              ],
+            ),
+          ],
+        ),
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => SolicitudCanjeDetallesPage(
+                idSolicitud: solicitud.idSolicitudCanje,
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Color _getCardColor(String? estado) {
+    switch (estado) {
+      case 'Aprobado':
+        return Color.fromARGB(167, 66, 167, 69);
+      case 'Rechazado':
+        return Color.fromARGB(167, 99, 29, 24);
+      default:
+        return Color.fromARGB(255, 82, 77, 77);
+    }
+  }
+
+  IconData _getCardIcon(String? estado) {
+    switch (estado) {
+      case 'Aprobado':
+        return Icons.check_circle_outline;
+      case 'Rechazado':
+        return Icons.cancel_outlined;
+      default:
+        return Icons.hourglass_empty_outlined;
+    }
   }
 }

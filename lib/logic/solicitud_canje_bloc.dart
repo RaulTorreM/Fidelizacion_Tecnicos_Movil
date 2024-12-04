@@ -70,7 +70,7 @@ class SolicitudCanjeSuccess extends SolicitudCanjeState {}
 
 
 class SolicitudCanjeDetallesSuccess extends SolicitudCanjeState {
-  final SolicitudCanjeDetalle detalles;
+  final SolicitudCanjeDetalles detalles;
 
   SolicitudCanjeDetallesSuccess(this.detalles);
 
