@@ -4,7 +4,7 @@ import '../data/models/login_request.dart';
 import 'dart:convert'; 
 
 class TestLoginPage extends StatelessWidget {
-  final ApiService _apiService = ApiService.create();
+  final ApiService _apiService = DioInstance().getApiService();
 
   @override
   Widget build(BuildContext context) {

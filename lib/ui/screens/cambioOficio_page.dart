@@ -15,7 +15,7 @@ class ChangeJobPage extends StatefulWidget {
 
 class _ChangeJobPageState extends State<ChangeJobPage> {
   final _passwordController = TextEditingController();
-  final _profileRepository = PerfilRepository(ApiService.create());
+  final _profileRepository = PerfilRepository(DioInstance().getApiService());
   List<int> _selectedJobs = [];  // Guardar los IDs de los oficios seleccionados
   List<Oficio> _availableJobs = [];  // Aquí guardamos los oficios disponibles como objetos
   bool _isLoading = false;

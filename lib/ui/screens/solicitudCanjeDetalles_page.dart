@@ -21,7 +21,9 @@ class _SolicitudCanjeDetallesPageState extends State<SolicitudCanjeDetallesPage>
   void initState() {
     super.initState();
     solicitudCanjeBloc = SolicitudCanjeBloc(
-      solicitudCanjeRepository: SolicitudCanjeRepository(apiService: ApiService.create()),
+    solicitudCanjeRepository: SolicitudCanjeRepository(
+      apiService: DioInstance().getApiService(), // Aquí usamos la instancia compartida
+      ),
     );
     solicitudCanjeBloc.obtenerSolicitudCanjeDetalles(widget.idSolicitud);
   }

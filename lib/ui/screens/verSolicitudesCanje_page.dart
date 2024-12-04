@@ -22,7 +22,9 @@ class _VerSolicitudesCanjePageState extends State<VerSolicitudesCanjePage> {
   void initState() {
     super.initState();
     solicitudCanjeBloc = SolicitudCanjeBloc(
-      solicitudCanjeRepository: SolicitudCanjeRepository(apiService: ApiService.create()),
+    solicitudCanjeRepository: SolicitudCanjeRepository(
+        apiService: DioInstance().getApiService(),
+      ),
     );
     solicitudCanjeBloc.obtenerSolicitudesCanje(widget.idTecnico); 
   }

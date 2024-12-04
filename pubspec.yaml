@@ -14,6 +14,8 @@ dependencies:
   provider: ^6.0.0
   json_annotation: ^4.9.0
   http: ^0.13.4 
+  shared_preferences: ^2.3.3
+  flutter_local_notifications: ^18.0.1
 
 dev_dependencies:
   flutter_test:
@@ -27,3 +29,5 @@ flutter:
   assets:
     - assets/icons/logo_png.png
     - assets/others/background_JD.gif
+    - assets/others/fondo_cumpleaños.jpg
+    - assets/others/fondo_default.jpg

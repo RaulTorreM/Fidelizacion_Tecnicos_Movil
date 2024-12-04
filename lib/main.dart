@@ -6,7 +6,7 @@ import 'logic/login_bloc.dart';
 import 'logic/profile_bloc.dart';
 import 'logic/venta_intermediada_bloc.dart';  // Corregido el nombre del archivo
 import 'data/repositories/perfil_repository.dart';
-import 'services/api_service.dart';
+import 'services/api_service.dart';  // Asegúrate de que ApiService se importa correctamente
 import 'dart:io';
 
 void main() {
@@ -14,11 +14,11 @@ void main() {
   runApp(MyApp());
 }
 
- class MyHttpOverrides extends HttpOverrides{
+class MyHttpOverrides extends HttpOverrides {
   @override
-  HttpClient createHttpClient(SecurityContext? context){
+  HttpClient createHttpClient(SecurityContext? context) {
     return super.createHttpClient(context)
-      ..badCertificateCallback = (X509Certificate cert, String host, int port)=> true;
+      ..badCertificateCallback = (X509Certificate cert, String host, int port) => true;
   }
 }
 
@@ -27,24 +27,19 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        //Página de Recompensas
-        ChangeNotifierProvider(create: (_) => RecompensaBloc(ApiService.create())),
-        // Proveedor para ApiService
-        Provider<ApiService>(create: (_) => ApiService.create()),
+        // Página de Recompensas, ahora usando DioInstance().getApiService()
+        ChangeNotifierProvider(create: (context) => RecompensaBloc(DioInstance().getApiService())),
 
         // Proveedor para PerfilRepository
-        Provider<PerfilRepository>(create: (context) => PerfilRepository(Provider.of<ApiService>(context, listen: false))),
+        Provider<PerfilRepository>(create: (context) => PerfilRepository(DioInstance().getApiService())),
 
         // Proveedor para LoginBloc
-        ChangeNotifierProvider<LoginBloc>(create: (context) => LoginBloc(Provider.of<ApiService>(context, listen: false))),
+        ChangeNotifierProvider<LoginBloc>(create: (context) => LoginBloc(DioInstance().getApiService())),
 
-        // Proveedor para VentasIntermediadasBloc (Cambio de ChangeNotifierProvider a Provider)
+        // Proveedor para VentasIntermediadasBloc
         ChangeNotifierProvider<VentasIntermediadasBloc>(
-          create: (context) => VentasIntermediadasBloc(Provider.of<ApiService>(context, listen: false)),
+          create: (context) => VentasIntermediadasBloc(DioInstance().getApiService()),
         ),
-
-        // Proveedor para RecompensaBloc
-        ChangeNotifierProvider<RecompensaBloc>(create: (context) => RecompensaBloc(Provider.of<ApiService>(context, listen: false))),
 
         // Proveedor para ProfileBloc
         ChangeNotifierProvider<ProfileBloc>(create: (context) => ProfileBloc(Provider.of<PerfilRepository>(context, listen: false))),

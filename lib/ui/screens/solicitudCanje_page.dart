@@ -24,7 +24,8 @@ class _SolicitudCanjePageState extends State<SolicitudCanjePage> {
   late TextEditingController _comprobanteController;
   late TextEditingController _cantidadController;
   late SolicitudCanjeBloc solicitudCanjeBloc;
-  final ApiService _apiService = ApiService.create();
+  final ApiService _apiService = DioInstance().getApiService();
+
   int _cantidadRecompensa = 1;
   Recompensa? _selectedRecompensa; 
 

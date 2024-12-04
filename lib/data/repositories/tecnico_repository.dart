@@ -17,6 +17,7 @@ class TecnicoRepository {
       // Asegurarnos de que el servicio reciba la solicitud de login
       print('LoginRequest: ${loginRequest.toJson()}');
       final response = await _apiService.loginTecnico(loginRequest);
+      
       return response;
     } catch (e) {
       if (e is DioException) {

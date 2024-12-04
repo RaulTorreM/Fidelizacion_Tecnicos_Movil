@@ -9,7 +9,7 @@ class SolicitudCanjeDetalles {
   final String idVentaIntermediada;
   final String fechaHoraEmision_VentaIntermediada;
   final String idTecnico;
-  final String? idUser;
+  final int? idUser;
   final String fechaHora_SolicitudCanje;
   final int diasTranscurridos_SolicitudCanje;
   final int puntosComprobante_SolicitudCanje;

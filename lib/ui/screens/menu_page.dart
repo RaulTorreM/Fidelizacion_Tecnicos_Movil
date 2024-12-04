@@ -8,6 +8,8 @@ import '../screens/verSolicitudesCanje_page.dart';
 import '../../logic/login_bloc.dart';
 import 'package:provider/provider.dart';
 import 'home_page.dart'; 
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 class MenuPage extends StatefulWidget {
   final Tecnico tecnico;
@@ -20,11 +22,13 @@ class MenuPage extends StatefulWidget {
 }
 
 class _MenuPageState extends State<MenuPage> {
+  FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+      FlutterLocalNotificationsPlugin();
+  String backgroundImage = 'assets/others/fondo_default.jpg';  // Fondo por defecto
+
   @override
   void initState() {
     super.initState();
-
-    print(widget.isFirstLogin);
 
     // Mostrar el diálogo de cambio de contraseña si es el primer login
     if (widget.isFirstLogin) {
@@ -32,6 +36,42 @@ class _MenuPageState extends State<MenuPage> {
         _showChangePasswordDialog();
       });
     }
+
+    // Comprobar si es el cumpleaños del técnico
+    _checkBirthday();
+
+
+  }
+
+
+
+  void _checkBirthday() {
+    DateTime currentDate = DateTime.now();
+    DateTime birthDate = DateTime.parse(widget.tecnico.fechaNacimientoTecnico!);
+
+    if (currentDate.month == birthDate.month && currentDate.day == birthDate.day) {
+      // Usar addPostFrameCallback para esperar hasta que el widget esté listo
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        // Cambiar el fondo y mostrar el mensaje de cumpleaños
+        setState(() {
+          backgroundImage = 'assets/others/fondo_cumpleaños.jpg';
+        });
+        _showBirthdayMessage();
+      });
+    }
+  }
+
+  void _showBirthdayMessage() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          '¡Feliz Cumpleaños!, ¡Te deseamos un excelente día!',
+          style: TextStyle(color: Colors.white),
+        ),
+        backgroundColor: Colors.pinkAccent, // Color del banner
+        duration: Duration(seconds: 10), // Duración del banner
+      ),
+    );
   }
 
   void _showChangePasswordDialog() {
@@ -63,18 +103,21 @@ class _MenuPageState extends State<MenuPage> {
     );
   }
 
+  Future<void> removeApiKey() async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.remove('api_key'); // Eliminar la API Key
+  }
+
   // Lógica para cerrar sesión y redirigir al HomePage
-  void _logout(BuildContext context) {
-    // Obtener el LoginBloc
+  void _logout(BuildContext context) async {
     final loginBloc = Provider.of<LoginBloc>(context, listen: false);
-    
-    // Llamar al método logout
     loginBloc.logout();
+    await removeApiKey();
 
     Navigator.pushAndRemoveUntil(
       context,
-      MaterialPageRoute(builder: (context) => const HomePage()), // O LoginPage
-      (route) => false, // Esto elimina todas las rutas anteriores
+      MaterialPageRoute(builder: (context) => const HomePage()),
+      (route) => false,
     );
   }
 
@@ -92,95 +135,62 @@ class _MenuPageState extends State<MenuPage> {
           ),
         ],
       ),
-      drawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: <Widget>[
-            const DrawerHeader(
-              decoration: BoxDecoration(color: Color(0xFF021526)),
-              child: Text(
-                'Navegación',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 24,
-                ),
-              ),
-            ),
-            ListTile(
-              title: const Text('Ver Perfil'),
-              onTap: () {
-                Navigator.pop(context);
+      body: Container(
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage(backgroundImage), // Usar el fondo dinámico
+            fit: BoxFit.cover,
+          ),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: GridView.count(
+            crossAxisCount: 2,
+            crossAxisSpacing: 16.0,
+            mainAxisSpacing: 16.0,
+            children: [
+              _buildMenuCard('Perfil', Icons.person, () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => ProfilePage(idTecnico: widget.tecnico.idTecnico,),
+                    builder: (context) => ProfilePage(idTecnico: widget.tecnico.idTecnico),
                   ),
                 );
-              },
-            ),
-            ListTile(
-              title: const Text('Historial de Ventas Intermediadas'),
-              onTap: () {
-                Navigator.pop(context);
+              }),
+              _buildMenuCard('Historial de Ventas', Icons.history, () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (context) => HistorialVentasPage(idTecnico: widget.tecnico.idTecnico),
                   ),
                 );
-              },
-            ),
-          ],
-        ),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: GridView.count(
-          crossAxisCount: 2, // Número de columnas
-          crossAxisSpacing: 16.0, // Espacio horizontal entre tarjetas
-          mainAxisSpacing: 16.0, // Espacio vertical entre tarjetas
-          children: [
-            _buildMenuCard('Perfil', Icons.person, () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => ProfilePage(idTecnico: widget.tecnico.idTecnico,),
-                ),
-              );
-            }),
-            _buildMenuCard('Historial de Ventas', Icons.history, () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => HistorialVentasPage(idTecnico: widget.tecnico.idTecnico),
-                ),
-              );
-            }),
-            _buildMenuCard('Recompensas', Icons.card_giftcard, () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const RecompensasPage(),
-                ),
-              );
-            }),
-            _buildMenuCard('Solicitar Canje', Icons.badge, () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => SolicitudCanjePage(idTecnico: widget.tecnico.idTecnico),
-                ),
-              );
-            }),
-            _buildMenuCard('Ver Solicitudes', Icons.queue_play_next, () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => VerSolicitudesCanjePage(idTecnico: widget.tecnico.idTecnico),
-                ),
-              );
-            }),
-          ],
+              }),
+              _buildMenuCard('Recompensas', Icons.card_giftcard, () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const RecompensasPage(),
+                  ),
+                );
+              }),
+              _buildMenuCard('Solicitar Canje', Icons.badge, () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => SolicitudCanjePage(idTecnico: widget.tecnico.idTecnico),
+                  ),
+                );
+              }),
+              _buildMenuCard('Ver Solicitudes', Icons.queue_play_next, () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => VerSolicitudesCanjePage(idTecnico: widget.tecnico.idTecnico),
+                  ),
+                );
+              }),
+            ],
+          ),
         ),
       ),
     );

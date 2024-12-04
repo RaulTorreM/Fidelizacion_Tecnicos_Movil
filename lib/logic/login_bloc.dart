@@ -1,15 +1,14 @@
-
-
 import 'package:flutter/material.dart';
 import '../data/repositories/tecnico_repository.dart';
 import '../services/api_service.dart';
 import '../data/models/tecnico.dart';
-
+import 'package:shared_preferences/shared_preferences.dart';
 import '../data/models/login_request.dart';
 
 class LoginBloc with ChangeNotifier {
   final TecnicoRepository _tecnicoRepository;
-  bool isFirstLogin = false; 
+  
+  bool isFirstLogin = false;
 
   LoginBloc(ApiService apiService) : _tecnicoRepository = TecnicoRepository(apiService);
 
@@ -39,10 +38,19 @@ class LoginBloc with ChangeNotifier {
       final loginResponse = await _tecnicoRepository.loginTecnico(loginRequest);
 
       if (loginResponse.status == 'success') {
-        
         isFirstLogin = loginResponse.isFirstLogin;
-        print(isFirstLogin);
+        print(loginResponse.toJson());
+
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString('apikey', loginResponse.apiKey);
+        print("API Key guardada: ${prefs.getString('apikey')}");
+        // Obtener detalles del técnico
         await obtenerDetallesTecnico(loginResponse.idTecnico);
+
+        // Verificar si es el primer inicio de sesión
+        if (isFirstLogin) {
+          showChangePasswordDialog(context); // Mostrar un diálogo para cambiar la contraseña
+        }
       } else {
         _error = loginResponse.message;
       }
@@ -66,13 +74,8 @@ class LoginBloc with ChangeNotifier {
     }
   }
 
-  void clear() {
-    _tecnico = null;
-    _error = null;
-    notifyListeners();
-  }
-  
-   void showChangePasswordDialog(BuildContext context) {
+  // Mostrar un diálogo cuando el técnico debe cambiar su contraseña
+  void showChangePasswordDialog(BuildContext context) {
     showDialog(
       context: context,
       builder: (context) {
@@ -82,8 +85,7 @@ class LoginBloc with ChangeNotifier {
           actions: [
             TextButton(
               onPressed: () {
-                // Aquí puedes manejar la lógica de redireccionamiento o acción cuando se cierra el diálogo
-                Navigator.of(context).pop();
+                Navigator.of(context).pop(); // Cerrar el diálogo
               },
               child: Text('Aceptar'),
             ),
@@ -93,17 +95,24 @@ class LoginBloc with ChangeNotifier {
     );
   }
 
+  // Método de cierre de sesión
   void logout() {
-    // Limpiar los datos del técnico
     _tecnico = null;
     isFirstLogin = false;
     _error = null;
 
-    // Si tienes datos persistentes, como SharedPreferences o token de autenticación, también deberías limpiarlos aquí.
-    // Ejemplo:
-    // await SharedPreferences.getInstance().then((prefs) {
-    //   prefs.clear(); // Esto borraría todos los datos persistidos.
-    // });
+    // Limpiar el apiKey de SharedPreferences
+    SharedPreferences.getInstance().then((prefs) {
+      prefs.remove('apikey');
+    });
+
+    notifyListeners();
+  }
+  
+  // Limpiar el estado del LoginBloc
+  void clear() {
+    _tecnico = null;
+    _error = null;
     notifyListeners();
   }
 }

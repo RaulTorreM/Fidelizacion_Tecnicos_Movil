@@ -13,7 +13,7 @@ SolicitudCanjeDetalles _$SolicitudCanjeDetallesFromJson(Map json) =>
       fechaHoraEmision_VentaIntermediada:
           json['fechaHoraEmision_VentaIntermediada'] as String,
       idTecnico: json['idTecnico'] as String,
-      idUser: json['idUser'] as String?,
+      idUser: (json['idUser'] as num?)?.toInt(),
       fechaHora_SolicitudCanje: json['fechaHora_SolicitudCanje'] as String,
       diasTranscurridos_SolicitudCanje:
           (json['diasTranscurridos_SolicitudCanje'] as num).toInt(),

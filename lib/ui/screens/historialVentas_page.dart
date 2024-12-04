@@ -14,7 +14,8 @@ class HistorialVentasPage extends StatefulWidget {
 
 class _HistorialVentasPageState extends State<HistorialVentasPage> {
   late Future<List<VentaIntermediada>> _ventas;
-  final ApiService _apiService = ApiService.create(); // Definición de _apiService
+  final ApiService _apiService = DioInstance().getApiService();
+
 
       void initState() {
         super.initState();
