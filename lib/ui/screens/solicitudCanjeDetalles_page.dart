@@ -107,7 +107,7 @@ class _SolicitudCanjeDetallesPageState extends State<SolicitudCanjeDetallesPage>
     IconData icon;
     switch (detalles.nombre_EstadoSolicitudCanje) {
       case 'Aprobado':
-        color = const Color.fromARGB(167, 66, 167, 69);
+        color = const Color.fromARGB(167, 3, 201, 10);
         icon = Icons.check_circle_outline;
         break;
       case 'Rechazado':

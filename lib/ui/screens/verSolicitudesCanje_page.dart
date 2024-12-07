@@ -137,7 +137,7 @@ class _VerSolicitudesCanjePageState extends State<VerSolicitudesCanjePage> {
   Color _getCardColor(String? estado) {
     switch (estado) {
       case 'Aprobado':
-        return Color.fromARGB(167, 66, 167, 69);
+        return Color.fromARGB(167, 3, 201, 10);
       case 'Rechazado':
         return Color.fromARGB(167, 99, 29, 24);
       default:
