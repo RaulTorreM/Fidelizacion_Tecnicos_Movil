@@ -62,7 +62,7 @@ class _VerSolicitudesCanjePageState extends State<VerSolicitudesCanjePage> {
             builder: (context, snapshot) {
               final solicitudes = snapshot.data ?? [];
               if (solicitudes.isEmpty) {
-                return Center(child: Text('No hay solicitudes disponibles.'));
+                return Center(child: Text('Cargando ...'));
               }
 
               return ListView.builder(

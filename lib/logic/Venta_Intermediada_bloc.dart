@@ -35,6 +35,23 @@ class VentasIntermediadasBloc with ChangeNotifier {
     }
   }
 
+  Future<void> fetchVentasIntermediadasSolicitudes(String idTecnico) async {
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      _ventasIntermediadas = await _ventaIntermediadaRepository.obtenerIntermediadasSolicitudes(idTecnico);
+      _error = null;
+    } catch (e) {
+      _ventasIntermediadas = [];
+      _error = 'Error al obtener ventas intermediadas: ${e.toString()}';
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
   // Limpiar error y lista de ventas
   void clear() {
     _ventasIntermediadas = [];

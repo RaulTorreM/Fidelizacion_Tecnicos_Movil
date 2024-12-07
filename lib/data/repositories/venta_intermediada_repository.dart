@@ -15,4 +15,15 @@ class VentaIntermediadaRepository {
       throw Exception('Error al obtener ventas intermediadas: $e');
     }
   }
+
+   Future<List<VentaIntermediada>> obtenerIntermediadasSolicitudes(String idTecnico) async {
+    try {
+      // Llamada a la API para obtener las ventas intermediadas por idTecnico
+      final response = await _apiService.getVentasIntermediadasSolicitudes(idTecnico);
+      return response;
+    } catch (e) {
+      throw Exception('Error al obtener ventas intermediadas: $e');
+    }
+  }
+  
 }

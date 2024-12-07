@@ -61,7 +61,7 @@ class LoginPage extends StatelessWidget {
       } else if (loginBloc.error != null) {
         // Muestra el mensaje de error si el login falló
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(loginBloc.error!)),
+          SnackBar(content: Text("Las Credenciales Ingresadas son Invalidas, intentelo nuevamente.")),
         );
       } else {
         // Muestra un mensaje de error genérico si algo falla inesperadamente

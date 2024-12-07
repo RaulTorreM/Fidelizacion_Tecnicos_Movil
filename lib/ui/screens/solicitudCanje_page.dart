@@ -63,7 +63,7 @@ class _SolicitudCanjePageState extends State<SolicitudCanjePage> {
 
   Future<List<VentaIntermediada>> _fetchVentas() async {
     // Llamada a la API para obtener las ventas del técnico
-    List<VentaIntermediada> ventas = await _apiService.getVentasIntermediadas(widget.idTecnico);
+    List<VentaIntermediada> ventas = await _apiService.getVentasIntermediadasSolicitudes(widget.idTecnico);
     // Filtrar ventas que tienen estado 1 o 2 (En espera o Redimido parcial)
     return ventas.where((venta) => venta.idEstadoVenta == 1 || venta.idEstadoVenta == 2).toList();
   }
@@ -121,10 +121,17 @@ class _SolicitudCanjePageState extends State<SolicitudCanjePage> {
                     onPressed: _limpiarTabla,
                     child: Text('Limpiar tabla'),
                   ),
-                  ElevatedButton(
-                    onPressed: _guardarCanje,
-                    style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
-                    child: Text('Guardar canje'),
+                  ElevatedButton(  
+                    onPressed: () {
+                    mostrarConfirmacionCanje(
+                      context: context,
+                      mensaje: '¿Estás seguro de realizar esta solicitud? \nNo podrás realizar nuevas solicitudes con la misma venta hasta que halla sido Aprobado o Rechazado',
+                      onConfirmar: _guardarCanje, // Pasas el método que quieres ejecutar
+                    );
+                  },
+                  child: Text('Guardar Canje'),
+                  style: ElevatedButton.styleFrom(backgroundColor: Colors.green,),
+                  
                   ),
                 ],
               ),
@@ -132,6 +139,40 @@ class _SolicitudCanjePageState extends State<SolicitudCanjePage> {
           ),
         ),
       ),
+    );
+  }
+
+  Future<void> mostrarConfirmacionCanje({
+    required BuildContext context,
+    required String mensaje,
+    required VoidCallback onConfirmar,
+  }) async {
+    showDialog(
+      context: context,
+      barrierDismissible: false, // Evitar cerrar el diálogo al tocar fuera de él
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Confirmar Canje'),
+          content: Text(mensaje),
+          actions: [
+            TextButton(
+              onPressed: () {
+                // Cerrar el diálogo sin realizar ninguna acción
+                Navigator.of(context).pop();
+              },
+              child: Text('No'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                // Ejecutar el método proporcionado y cerrar el diálogo
+                Navigator.of(context).pop(); // Cierra el diálogo antes de ejecutar
+                onConfirmar();
+              },
+              child: Text('Sí'),
+            ),
+          ],
+        );
+      },
     );
   }
 

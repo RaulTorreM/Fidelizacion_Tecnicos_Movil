@@ -28,10 +28,10 @@ class LoginBloc with ChangeNotifier {
     try {
       // Crear el objeto LoginRequest con los datos de login
       final loginRequest = LoginRequest(
-        celularTecnico: "964866527",
-        password: "123",
-        // celularTecnico: celular, 
-        // password: password,
+        // celularTecnico: "964866527",
+        // password: "123",
+        celularTecnico: celular, 
+        password: password,
       );
 
       // Llamar al método loginTecnico del repositorio

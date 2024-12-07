@@ -30,6 +30,9 @@ abstract class ApiService {
   @GET("/ventas-intermediadas/{idTecnico}")
   Future<List<VentaIntermediada>> getVentasIntermediadas(@Path("idTecnico") String idTecnico);
 
+  @GET("/ventasIntermediadasSolicitud/{idTecnico}")
+  Future<List<VentaIntermediada>> getVentasIntermediadasSolicitudes(@Path("idTecnico") String idTecnico);
+
   @GET("/getTecnico/{idTecnico}")
   Future<TecnicoResponse> obtenerTecnicoPorId(@Path("idTecnico") String idTecnico);
 
