@@ -123,8 +123,11 @@ class _MenuPageState extends State<MenuPage> {
 
   @override
   Widget build(BuildContext context) {
+    
     return Scaffold(
+      
       appBar: AppBar(
+        automaticallyImplyLeading: false, 
         title: Text('Bienvenido, ${widget.tecnico.nombreTecnico}'),
         actions: [
           IconButton(
