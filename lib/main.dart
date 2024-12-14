@@ -46,7 +46,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider<ProfileBloc>(create: (context) => ProfileBloc(Provider.of<PerfilRepository>(context, listen: false))),
       ],
       child: MaterialApp(
-        title: 'Técnicos App',
+        title: 'Club de Técnicos',
         theme: ThemeData(
           primarySwatch: Colors.blue,
           visualDensity: VisualDensity.adaptivePlatformDensity,

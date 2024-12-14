@@ -16,6 +16,7 @@ dependencies:
   http: ^0.13.4 
   shared_preferences: ^2.3.3
   flutter_local_notifications: ^18.0.1
+  flutter_launcher_icons: ^0.14.2
   
   
 
@@ -26,7 +27,11 @@ dev_dependencies:
   retrofit_generator: ^7.0.0
   json_serializable: ^6.6.0
   change_app_package_name: ^1.4.0
-  flutter_launcher_icons: "^0.14.2"
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/icons/logo_app.png"
 
 flutter:
   uses-material-design: true
