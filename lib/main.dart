@@ -10,10 +10,11 @@ import 'services/api_service.dart';  // Asegúrate de que ApiService se importa 
 import 'dart:io';
 
 void main() {
-  HttpOverrides.global = MyHttpOverrides();
+  // HttpOverrides.global = MyHttpOverrides(); //Quitarlo al momento de llevarlo a producción
   runApp(MyApp());
 }
 
+//Función solamente para Desarrollo (SSL en emuladores), Quitarlo al momento de llevarlo a producción junto con la linea marcada en Main
 class MyHttpOverrides extends HttpOverrides {
   @override
   HttpClient createHttpClient(SecurityContext? context) {

@@ -39,11 +39,10 @@ class LoginBloc with ChangeNotifier {
 
       if (loginResponse.status == 'success') {
         isFirstLogin = loginResponse.isFirstLogin;
-        print(loginResponse.toJson());
+
 
         final prefs = await SharedPreferences.getInstance();
         await prefs.setString('apikey', loginResponse.apiKey);
-        print("API Key guardada: ${prefs.getString('apikey')}");
         // Obtener detalles del técnico
         await obtenerDetallesTecnico(loginResponse.idTecnico);
 

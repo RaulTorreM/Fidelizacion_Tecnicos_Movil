@@ -1,4 +1,4 @@
-package com.example.fidelizacion_tecnicos
+package com.clubtecnicosdimacof.site.clubtecnicosdimacof
 
 import io.flutter.embedding.android.FlutterActivity
 

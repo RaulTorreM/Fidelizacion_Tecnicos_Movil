@@ -41,10 +41,10 @@ class SolicitudCanjeBloc {
   void obtenerSolicitudCanjeDetalles(String idSolicitud) async {
   try {
     final detalles = await solicitudCanjeRepository.obtenerSolicitudCanjeDetalles(idSolicitud);
-    print('Detalles obtenidos: ${json.encode(detalles)}');
+
     _stateController.add(SolicitudCanjeDetallesSuccess(detalles));
     } catch (e) {
-      print('Error al obtener los detalles: $e');
+
       _stateController.add(SolicitudCanjeFailure('Error al obtener los detalles: $e'));
     }
   }

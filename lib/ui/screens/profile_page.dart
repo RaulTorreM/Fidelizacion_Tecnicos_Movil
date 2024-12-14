@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../data/models/tecnico.dart';
 import '../../logic/profile_bloc.dart';
-import 'cambioOficio_page.dart';
 import 'cambioContraseña_page.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -57,8 +56,19 @@ class _ProfilePageState extends State<ProfilePage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Center(
+                  child: CircleAvatar(
+                    radius: 50,
+                    backgroundColor: Colors.grey[200],
+                    child: Text(
+                      tecnico.nombreTecnico[0],
+                      style: const TextStyle(fontSize: 40, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                Center(
                   child: Text(
-                    '${tecnico.nombreTecnico}',
+                    tecnico.nombreTecnico,
                     style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
                   ),
                 ),
@@ -69,7 +79,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 _buildInfoCard('Puntos Totales', '${tecnico.totalPuntosActualesTecnico}'),
                 _buildInfoCard('Fecha de Nacimiento', tecnico.fechaNacimientoTecnico ?? 'No disponible'),
                 _buildInfoCard('Histórico de Puntos', '${tecnico.historicoPuntosTecnico}'),
-                _buildOficiosCard(tecnico.oficios, tecnico, context),
+                _buildOficiosCard(tecnico.oficios, context),
                 const SizedBox(height: 20),
                 Center(
                   child: ElevatedButton.icon(
@@ -91,7 +101,6 @@ class _ProfilePageState extends State<ProfilePage> {
                     ),
                   ),
                 ),
-                const SizedBox(height: 20),
               ],
             ),
           );
@@ -127,7 +136,7 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  Widget _buildOficiosCard(List<Oficio> oficios, Tecnico tecnico, BuildContext context) {
+  Widget _buildOficiosCard(List<Oficio> oficios, BuildContext context) {
     return Card(
       elevation: 4,
       margin: const EdgeInsets.symmetric(vertical: 8),
@@ -141,12 +150,48 @@ class _ProfilePageState extends State<ProfilePage> {
           children: oficios.map((oficio) => Text(oficio.nombreOficio)).toList(),
         ),
         trailing: IconButton(
-          icon: const Icon(Icons.edit),
+          icon: const Icon(Icons.search),
           onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => ChangeJobPage(tecnico: tecnico),
+            showDialog(
+              context: context,
+              builder: (context) => AlertDialog(
+                title: const Text('Detalles de Oficios'),
+                content: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: oficios
+                      .map(
+                        (oficio) => Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 8.0),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Expanded(
+                                flex: 1,
+                                child: Text(
+                                  oficio.nombreOficio,
+                                  style: const TextStyle(fontWeight: FontWeight.bold),
+                                ),
+                              ),
+                              const SizedBox(width: 10),
+                              Expanded(
+                                flex: 2,
+                                child: Text(
+                                  oficio.descripcion_Oficio,
+                                  style: const TextStyle(color: Colors.grey),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      )
+                      .toList(),
+                ),
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    child: const Text('Cerrar'),
+                  ),
+                ],
               ),
             );
           },

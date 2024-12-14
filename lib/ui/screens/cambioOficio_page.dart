@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../data/models/tecnico.dart';  // Importar el modelo Tecnico que contiene Oficio
+import '../../data/models/tecnico.dart'; // Modelo Técnico
 import '../../data/repositories/perfil_repository.dart';
 import '../../services/api_service.dart';
 import 'profile_page.dart';
@@ -16,70 +16,147 @@ class ChangeJobPage extends StatefulWidget {
 class _ChangeJobPageState extends State<ChangeJobPage> {
   final _passwordController = TextEditingController();
   final _profileRepository = PerfilRepository(DioInstance().getApiService());
-  List<int> _selectedJobs = [];  // Guardar los IDs de los oficios seleccionados
-  List<Oficio> _availableJobs = [];  // Aquí guardamos los oficios disponibles como objetos
+  List<int?> _selectedJobs = [];
+  List<Oficio> _availableJobs = [];
   bool _isLoading = false;
 
   @override
   void initState() {
     super.initState();
-    // Cargar los oficios disponibles desde la API
     _loadAvailableJobs();
-    // Inicializar los oficios seleccionados con los que tiene el técnico (en términos de IDs)
     _selectedJobs = widget.tecnico.oficios.map((e) => e.idOficio).toList();
   }
 
-  // Cargar los oficios disponibles desde la API
   Future<void> _loadAvailableJobs() async {
-  try {
-    final response = await _profileRepository.getAvailableJobs(); // Aquí esperas List<Oficio>, no List<Tecnico>
-    setState(() {
-      _availableJobs = response;  // Almacena los oficios disponibles
-    });
-  } catch (e) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Error al cargar los oficios: ${e.toString()}')),
-    );
+    try {
+      final response = await _profileRepository.getAvailableJobs();
+      setState(() {
+        _availableJobs = response;
+      });
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error al cargar los oficios: ${e.toString()}')),
+      );
+    }
   }
-}
 
-  // Construir la interfaz para los dropdowns de los oficios
-  Widget _buildJobDropdown(int index) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Oficio Actual: ${widget.tecnico.oficios[index].nombreOficio}',
-          style: const TextStyle(fontSize: 16),
-        ),
-        const SizedBox(height: 10),
-        DropdownButtonFormField<String>(
-          value: _availableJobs.isNotEmpty
-              ? _availableJobs
-                  .firstWhere((oficio) => oficio.idOficio == _selectedJobs[index])
-                  .nombreOficio
-              : null, // Asegúrate de que haya un valor válido
-          decoration: const InputDecoration(
-            labelText: 'Selecciona un nuevo oficio',
-            border: OutlineInputBorder(),
+  void _addNewJob() {
+    setState(() {
+      _selectedJobs.add(null); // Añadir una nueva fila vacía
+    });
+  }
+
+  void _removeJob(int index) {
+    setState(() {
+      _selectedJobs.removeAt(index); // Eliminar la fila seleccionada
+    });
+  }
+
+  Future<void> _saveChanges() async {
+    // Validar campos vacíos
+    if (_selectedJobs.contains(null)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('No se pueden guardar filas con oficios vacíos')),
+      );
+      return;
+    }
+
+    // Validar duplicados
+    if (_selectedJobs.length != _selectedJobs.toSet().length) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('No se permiten oficios duplicados')),
+      );
+      return;
+    }
+
+    // Validar contraseña y enviar cambios
+    if (_passwordController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Por favor, ingrese su contraseña')),
+      );
+      return;
+    }
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      final response = await _profileRepository.updateJobs(
+        widget.tecnico.idTecnico,
+        _selectedJobs.cast<int>(), // Convertir a lista de enteros
+        _passwordController.text,
+      );
+
+      if (response['status'] == 'success') {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Oficios cambiados correctamente')),
+        );
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ProfilePage(
+              idTecnico: widget.tecnico.idTecnico,
+            ),
           ),
-          onChanged: (newValue) {
-            setState(() {
-              // Encuentra el ID del oficio seleccionado por el nombre
-              int selectedId = _availableJobs
-                  .firstWhere((oficio) => oficio.nombreOficio == newValue)
-                  .idOficio;
-              _selectedJobs[index] = selectedId;  // Actualiza el ID en lugar del nombre
-            });
-          },
-          items: _availableJobs.map((oficio) {
-            return DropdownMenuItem(
-              value: oficio.nombreOficio,
-              child: Text(oficio.nombreOficio),
-            );
-          }).toList(),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: ${response['message']}')),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: ${e.toString()}')),
+      );
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  Widget _buildJobDropdown(int index) {
+    final currentJob = widget.tecnico.oficios[index].nombreOficio;
+
+    return Row(
+      children: [
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Oficio actual: $currentJob',
+                style: TextStyle(fontSize: 12, color: Colors.grey),
+              ),
+              const SizedBox(height: 5),
+              DropdownButtonFormField<int>(
+                value: _selectedJobs[index],
+                decoration: const InputDecoration(
+                  labelText: 'Selecciona un oficio',
+                  border: OutlineInputBorder(),
+                ),
+                onChanged: (newValue) {
+                  setState(() {
+                    _selectedJobs[index] = newValue;
+                  });
+                },
+                items: _availableJobs.map((oficio) {
+                  return DropdownMenuItem(
+                    value: oficio.idOficio,
+                    child: Text(oficio.nombreOficio),
+                  );
+                }).toList(),
+              ),
+            ],
+          ),
         ),
-        const SizedBox(height: 20),
+        IconButton(
+          icon: const Icon(Icons.close, color: Colors.red),
+          onPressed: () {
+            _removeJob(index);
+          },
+        ),
       ],
     );
   }
@@ -94,9 +171,20 @@ class _ChangeJobPageState extends State<ChangeJobPage> {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            // Generar dropdown para cada oficio
-            for (int i = 0; i < widget.tecnico.oficios.length; i++)
-              _buildJobDropdown(i),
+            Expanded(
+              child: ListView.builder(
+                itemCount: _selectedJobs.length,
+                itemBuilder: (context, index) => Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: _buildJobDropdown(index),
+                ),
+              ),
+            ),
+            ElevatedButton.icon(
+              onPressed: _addNewJob,
+              icon: const Icon(Icons.add),
+              label: const Text('Añadir nuevo oficio'),
+            ),
             const SizedBox(height: 20),
             TextField(
               controller: _passwordController,
@@ -110,50 +198,7 @@ class _ChangeJobPageState extends State<ChangeJobPage> {
             _isLoading
                 ? const CircularProgressIndicator()
                 : ElevatedButton(
-                    onPressed: () async {
-                      if (_selectedJobs.isNotEmpty && _passwordController.text.isNotEmpty) {
-                        setState(() {
-                          _isLoading = true;
-                        });
-                        try {
-                          // Envía la solicitud a la API para cambiar los oficios
-                          final response = await _profileRepository.updateJobs(
-                            widget.tecnico.idTecnico,
-                            _selectedJobs,  // IDs de los oficios seleccionados
-                            _passwordController.text,
-                          );
-
-                          // Maneja la respuesta y navega de vuelta al perfil si es exitoso
-                          if (response['message'] == 'Oficios actualizados correctamente') {
-                            Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => ProfilePage(
-                                  idTecnico: widget.tecnico.idTecnico,
-                                ),
-                              ),
-                            );
-                          } else {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text('Error: ${response['message']}')),
-                            );
-                          }
-                        } catch (e) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text('Error: ${e.toString()}')),
-                          );
-                        } finally {
-                          setState(() {
-                            _isLoading = false;
-                          });
-                        }
-                      } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Por favor ingresa todos los datos')),
-                        );
-                      }
-                    }
-                    ,
+                    onPressed: _saveChanges,
                     child: const Text('Guardar Cambios'),
                   ),
           ],

@@ -74,7 +74,7 @@ class _MenuPageState extends State<MenuPage> {
     );
   }
 
-  void _showChangePasswordDialog() {
+    void _showChangePasswordDialog() {
     showDialog(
       context: context,
       builder: (context) {
@@ -82,9 +82,18 @@ class _MenuPageState extends State<MenuPage> {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(15),
           ),
-          title: const Text('Cambio de Contraseña'),
+          title: Row(
+            children: [
+              Icon(Icons.lock_outline, color: Colors.blue, size: 28),
+              const SizedBox(width: 10),
+              const Text(
+                'Actualización de Contraseña',
+                style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+              ),
+            ],
+          ),
           content: const Text(
-            'Por seguridad, debe cambiar su contraseña ya que es su primer inicio de sesión.',
+            'Por motivos de seguridad, le solicitamos actualizar su contraseña. Este proceso garantiza la protección de su cuenta y el acceso seguro a nuestros servicios.',
             style: TextStyle(fontSize: 16),
           ),
           actions: [
@@ -93,8 +102,12 @@ class _MenuPageState extends State<MenuPage> {
                 Navigator.of(context).pop(); // Cerrar el diálogo
               },
               child: const Text(
-                'Aceptar',
-                style: TextStyle(color: Colors.blue),
+                'Entendido',
+                style: TextStyle(
+                  color: Colors.blue,
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
           ],
@@ -102,6 +115,7 @@ class _MenuPageState extends State<MenuPage> {
       },
     );
   }
+
 
   Future<void> removeApiKey() async {
     final prefs = await SharedPreferences.getInstance();
@@ -218,12 +232,16 @@ class _MenuPageState extends State<MenuPage> {
                 color: const Color.fromARGB(255, 239, 239, 240),
               ),
               const SizedBox(height: 8),
-              Text(
-                title,
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Color.fromARGB(255, 255, 255, 255),
+              FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Text(
+                  title,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Color.fromARGB(255, 255, 255, 255),
+                  ),
                 ),
               ),
             ],
@@ -232,4 +250,5 @@ class _MenuPageState extends State<MenuPage> {
       ),
     );
   }
+
 }

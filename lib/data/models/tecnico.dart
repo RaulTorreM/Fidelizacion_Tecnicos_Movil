@@ -52,7 +52,10 @@ class Oficio {
   @JsonKey(name: 'nombre_Oficio') 
   final String nombreOficio;
 
-  Oficio({required this.idOficio, required this.nombreOficio});
+  @JsonKey(name: 'descripcion_Oficio') 
+  final String descripcion_Oficio;
+
+  Oficio(this.descripcion_Oficio, {required this.idOficio, required this.nombreOficio});
 
   factory Oficio.fromJson(Map<String, dynamic> json) => _$OficioFromJson(json);
   Map<String, dynamic> toJson() => _$OficioToJson(this);

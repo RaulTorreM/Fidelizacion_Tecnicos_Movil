@@ -80,18 +80,7 @@ class HomePage extends StatelessWidget {
                   ),
                 ),
 
-                const SizedBox(height: 20),
-
-                // Olvidó su contraseña
-                TextButton(
-                  onPressed: () {
-                    // Acción para olvidó su contraseña
-                  },
-                  child: const Text(
-                    'Olvidó su contraseña?',
-                    style: TextStyle(color: Colors.white70),
-                  ),
-                ),
+                
               ],
             ),
           ),

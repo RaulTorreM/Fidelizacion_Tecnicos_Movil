@@ -15,16 +15,14 @@ class TecnicoRepository {
     try {
       
       // Asegurarnos de que el servicio reciba la solicitud de login
-      print('LoginRequest: ${loginRequest.toJson()}');
       final response = await _apiService.loginTecnico(loginRequest);
       
       return response;
     } catch (e) {
       if (e is DioException) {
-        print('Error: ${e.response?.data}'); // Imprime la respuesta del servidor
-        print('Status Code: ${e.response?.statusCode}');
+
       } else {
-        print('Error desconocido: $e');
+
       }
       throw Exception('Error al iniciar sesión: $e');
     }
@@ -47,7 +45,7 @@ class TecnicoRepository {
       final response = await _apiService.obtenerTecnicoPorId(idTecnico);
       return response.tecnico; // Asegúrate de que la respuesta esté correctamente definida.
     } catch (e) {
-      print("Error en el repositorio al obtener el técnico: $e");
+
       rethrow;
     }
 }

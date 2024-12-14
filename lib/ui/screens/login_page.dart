@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../../logic/login_bloc.dart';
 import 'package:dio/dio.dart';
@@ -11,7 +12,7 @@ class LoginPage extends StatelessWidget {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   Future<void> _testApiConnection(BuildContext context) async {
-    final dio = Dio(); // Crea una instancia de Dio
+    final dio = Dio();
     try {
       final response = await dio.get("https://clubtecnicosdimacof.site/api/loginmovil/login-DataTecnicos");
 
@@ -43,12 +44,9 @@ class LoginPage extends StatelessWidget {
     final loginBloc = Provider.of<LoginBloc>(context, listen: false);
 
     if (_formKey.currentState!.validate()) {
-      // Ejecuta el método de login
       await loginBloc.login(celularController.text, passwordController.text, context);
 
-      // Verifica si el técnico fue autenticado correctamente
       if (loginBloc.tecnico != null) {
-        // Navega a MenuPage solo si el login es exitoso
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
@@ -59,12 +57,10 @@ class LoginPage extends StatelessWidget {
           ),
         );
       } else if (loginBloc.error != null) {
-        // Muestra el mensaje de error si el login falló
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text("Las Credenciales Ingresadas son Invalidas, intentelo nuevamente.")),
         );
       } else {
-        // Muestra un mensaje de error genérico si algo falla inesperadamente
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: const Text('Error desconocido.')),
         );
@@ -75,12 +71,13 @@ class LoginPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: true, // Ajusta automáticamente el diseño al abrir el teclado
       appBar: AppBar(
         title: const Text('Ingrese sus Credenciales', style: TextStyle(color: Colors.white)),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () {
-            Navigator.pop(context); // Regresar a HomePage
+            Navigator.pop(context);
           },
         ),
         backgroundColor: const Color(0xFF021526),
@@ -93,7 +90,7 @@ class LoginPage extends StatelessWidget {
             painter: BackgroundPainter(),
           ),
           // Contenido
-          Padding(
+          SingleChildScrollView( // Envuelve el contenido para evitar desbordes
             padding: const EdgeInsets.all(20),
             child: Form(
               key: _formKey,
@@ -101,6 +98,7 @@ class LoginPage extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   // Logo
+                  const SizedBox(height: 50),
                   Image.asset(
                     "assets/icons/logo_png.png",
                     width: 200,
@@ -109,20 +107,25 @@ class LoginPage extends StatelessWidget {
                       return Text('Error al cargar la imagen: $error', style: const TextStyle(color: Colors.white));
                     },
                   ),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 15),
                   // Título
                   const Text(
                     'Iniciar Sesión',
+                    textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 24,
                       color: Color(0xFFE2E2B6),
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  const SizedBox(height: 10),
-                  // Formulario de inicio de sesión
+                  const SizedBox(height: 35),
+                  // Teléfono
                   TextFormField(
                     controller: celularController,
+                    keyboardType: TextInputType.phone, // Muestra teclado numérico
+                    inputFormatters: [
+                      LengthLimitingTextInputFormatter(9), // Limita a 9 caracteres
+                    ],
                     decoration: InputDecoration(
                       labelText: 'Teléfono',
                       filled: true,
@@ -142,8 +145,10 @@ class LoginPage extends StatelessWidget {
                     },
                   ),
                   const SizedBox(height: 16),
+                  // Contraseña
                   TextFormField(
                     controller: passwordController,
+                    obscureText: true,
                     decoration: InputDecoration(
                       labelText: 'Contraseña',
                       filled: true,
@@ -154,7 +159,6 @@ class LoginPage extends StatelessWidget {
                         borderSide: const BorderSide(color: Color(0xFFE2E2B6)),
                       ),
                     ),
-                    obscureText: true,
                     style: const TextStyle(color: Color(0xFFE2E2B6)),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
@@ -164,6 +168,7 @@ class LoginPage extends StatelessWidget {
                     },
                   ),
                   const SizedBox(height: 24),
+                  // Botón Ingresar
                   ElevatedButton(
                     onPressed: () => _login(context),
                     child: const Text('Ingresar'),
@@ -173,12 +178,45 @@ class LoginPage extends StatelessWidget {
                       foregroundColor: Colors.white,
                     ),
                   ),
-                  const SizedBox(height: 16),
-                  ElevatedButton(
-                    onPressed: () => _testApiConnection(context),
-                    child: const Text('Probar Conexión API', style: TextStyle(color: Color(0xFF021526))),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFE2E2B6),
+                  const SizedBox(height: 5),
+                  // Olvidó su contraseña
+                  TextButton(
+                    onPressed: () {
+                      showDialog(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                          title: Row(
+                            children: [
+                              Icon(Icons.info_outline, color: Colors.blue, size: 28),
+                              const SizedBox(width: 10),
+                              const Text(
+                                'Recuperar Contraseña',
+                                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                              ),
+                            ],
+                          ),
+                          content: const Text(
+                            'Para restablecer su contraseña, por favor acérquese a nuestras oficinas más cercanas. Nuestro equipo estará encantado de ayudarle.',
+                            style: TextStyle(fontSize: 16),
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.of(context).pop(),
+                              child: const Text(
+                                'Cerrar',
+                                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                    child: const Text(
+                      '¿Olvidó su contraseña?',
+                      style: TextStyle(color: Colors.white70),
                     ),
                   ),
                 ],

@@ -32,6 +32,7 @@ Map<String, dynamic> _$TecnicoToJson(Tecnico instance) => <String, dynamic>{
     };
 
 Oficio _$OficioFromJson(Map json) => Oficio(
+      json['descripcion_Oficio'] as String,
       idOficio: (json['idOficio'] as num).toInt(),
       nombreOficio: json['nombre_Oficio'] as String,
     );
@@ -39,4 +40,5 @@ Oficio _$OficioFromJson(Map json) => Oficio(
 Map<String, dynamic> _$OficioToJson(Oficio instance) => <String, dynamic>{
       'idOficio': instance.idOficio,
       'nombre_Oficio': instance.nombreOficio,
+      'descripcion_Oficio': instance.descripcion_Oficio,
     };

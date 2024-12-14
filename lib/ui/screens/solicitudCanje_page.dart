@@ -636,9 +636,6 @@ class _SolicitudCanjePageState extends State<SolicitudCanjePage> {
       puntosCanjeados_SolicitudCanje : _puntosCanjeados
     );
 
-    // Depurar el JSON antes de enviarlo
-    final jsonData = solicitudCanje.toJson();
-    print('JSON enviado: ${json.encode(jsonData)}');
 
     // Mostrar un indicador de carga mientras se envía la solicitud
     showDialog(
