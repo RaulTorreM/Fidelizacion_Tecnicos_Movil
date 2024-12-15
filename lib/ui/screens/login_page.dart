@@ -10,6 +10,7 @@ class LoginPage extends StatelessWidget {
   final TextEditingController celularController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final ValueNotifier<bool> _isObscured = ValueNotifier(true); // Controlador para mostrar/ocultar la contraseña
 
   Future<void> _testApiConnection(BuildContext context) async {
     final dio = Dio();
@@ -145,26 +146,40 @@ class LoginPage extends StatelessWidget {
                     },
                   ),
                   const SizedBox(height: 16),
-                  // Contraseña
-                  TextFormField(
-                    controller: passwordController,
-                    obscureText: true,
-                    decoration: InputDecoration(
-                      labelText: 'Contraseña',
-                      filled: true,
-                      fillColor: const Color(0xFF03346E),
-                      labelStyle: const TextStyle(color: Color(0xFFE2E2B6)),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: const BorderSide(color: Color(0xFFE2E2B6)),
-                      ),
-                    ),
-                    style: const TextStyle(color: Color(0xFFE2E2B6)),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Por favor ingrese su contraseña';
-                      }
-                      return null;
+                  // Contraseña con botón de mostrar/ocultar
+                  ValueListenableBuilder<bool>(
+                    valueListenable: _isObscured,
+                    builder: (context, isObscured, child) {
+                      return TextFormField(
+                        controller: passwordController,
+                        obscureText: isObscured,
+                        decoration: InputDecoration(
+                          labelText: 'Contraseña',
+                          filled: true,
+                          fillColor: const Color(0xFF03346E),
+                          labelStyle: const TextStyle(color: Color(0xFFE2E2B6)),
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              isObscured ? Icons.visibility_off : Icons.visibility,
+                              color: Color(0xFFE2E2B6),
+                            ),
+                            onPressed: () {
+                              _isObscured.value = !isObscured;
+                            },
+                          ),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: const BorderSide(color: Color(0xFFE2E2B6)),
+                          ),
+                        ),
+                        style: const TextStyle(color: Color(0xFFE2E2B6)),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Por favor ingrese su contraseña';
+                          }
+                          return null;
+                        },
+                      );
                     },
                   ),
                   const SizedBox(height: 24),

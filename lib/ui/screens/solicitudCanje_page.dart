@@ -224,62 +224,87 @@ class _SolicitudCanjePageState extends State<SolicitudCanjePage> {
     );
   }
 
-    Widget _buildComprobantesDropdown() {
-  return FutureBuilder<List<VentaIntermediada>>(
-    future: _ventas, // El Future que contiene la lista de ventas
-    builder: (context, snapshot) {
-      // Verificamos el estado de la respuesta
-      if (snapshot.connectionState == ConnectionState.waiting) {
-        return CircularProgressIndicator(); // Muestra un cargando mientras esperamos
-      }
-      if (snapshot.hasError) {
-        return Text('Error: ${snapshot.error}'); // Muestra un error si ocurre
-      }
-
-      // Si la llamada al Future fue exitosa, mostramos los datos
-      if (!snapshot.hasData || snapshot.data!.isEmpty) {
-        return Text("No hay comprobantes Disponibles"); // Mensaje cuando no hay ventas
-      }
-
-      // Usamos la lista de ventas que ya fue cargada
-      List<VentaIntermediada> ventas = snapshot.data!;
-
-      return DropdownButton<VentaIntermediada>(
-        value: _selectedVenta,
-        items: ventas.map((VentaIntermediada venta) {
-          return DropdownMenuItem<VentaIntermediada>(
-            value: venta,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                // Muestra el ID de la venta
-                Text(
-                  'N° : ' +obtenerNumeroSolicitud(venta.idVentaIntermediada),
-                  style: TextStyle(fontSize: 16), // Tamaño del texto
-                  overflow: TextOverflow.ellipsis, // Truncar texto largo con puntos suspensivos
-                ),
-                // Espacio entre el ID de venta y la fecha
-                SizedBox(width: 10),
-                // Muestra la fecha de emisión de la venta
-                Text(
-                  "  "+ venta.puntosActuales_VentaIntermediada.toString()+ " Pts",
-                  style: TextStyle(fontSize: 16, color: Colors.red),
-                ),
-              ],
-            ),
+  Widget _buildComprobantesDropdown() {
+    return FutureBuilder<List<VentaIntermediada>>(
+      future: _ventas, // El Future que contiene la lista de ventas
+      builder: (context, snapshot) {
+        // Verificamos el estado de la respuesta
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(
+            child: CircularProgressIndicator(),
           );
-        }).toList(),
-        onChanged: (VentaIntermediada? newValue) {
-          setState(() {
-            _selectedVenta = newValue;
-            _comprobanteController.text = newValue?.idVentaIntermediada ?? '';
-          });
-        },
-        hint: Text("Selecciona comprobante"),
-      );
-    },
-  );
-}
+        }
+
+        if (snapshot.hasError) {
+          return _buildDropdownPlaceholder("No hay comprobantes disponibles.");
+        }
+
+        if (!snapshot.hasData || snapshot.data!.isEmpty) {
+          return _buildDropdownPlaceholder("No hay comprobantes disponibles.");
+        }
+
+        List<VentaIntermediada> ventas = snapshot.data!;
+
+        return DropdownButton<VentaIntermediada>(
+          value: _selectedVenta,
+          items: ventas.map((VentaIntermediada venta) {
+            return DropdownMenuItem<VentaIntermediada>(
+              value: venta,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'N°: ${obtenerNumeroSolicitud(venta.idVentaIntermediada)}',
+                    style: TextStyle(fontSize: 16),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  SizedBox(width: 10),
+                  Text(
+                    "${venta.puntosActuales_VentaIntermediada} Pts",
+                    style: TextStyle(fontSize: 16, color: Colors.red),
+                  ),
+                ],
+              ),
+            );
+          }).toList(),
+          onChanged: (VentaIntermediada? newValue) {
+            setState(() {
+              _selectedVenta = newValue;
+              _comprobanteController.text = newValue?.idVentaIntermediada ?? '';
+            });
+          },
+          hint: Text("Selecciona comprobante"),
+        );
+      },
+    );
+  }
+
+  /// Placeholder discreto cuando no hay datos o hay un error
+  Widget _buildDropdownPlaceholder(String message) {
+    return Container(
+      height: 48, // Altura similar a la de un DropdownButton
+      padding: EdgeInsets.symmetric(horizontal: 16),
+      alignment: Alignment.centerLeft,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: Colors.grey.shade400),
+        color: Colors.grey.shade100,
+      ),
+      child: Row(
+        children: [
+          Icon(Icons.info_outline, size: 20, color: Colors.grey.shade600),
+          SizedBox(width: 8),
+          Flexible(
+            child: Text(
+              message,
+              style: TextStyle(fontSize: 14, color: Colors.grey.shade700),
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 
   
   Widget _buildRewardSelection() {

@@ -22,11 +22,11 @@ class _VerSolicitudesCanjePageState extends State<VerSolicitudesCanjePage> {
   void initState() {
     super.initState();
     solicitudCanjeBloc = SolicitudCanjeBloc(
-    solicitudCanjeRepository: SolicitudCanjeRepository(
+      solicitudCanjeRepository: SolicitudCanjeRepository(
         apiService: DioInstance().getApiService(),
       ),
     );
-    solicitudCanjeBloc.obtenerSolicitudesCanje(widget.idTecnico); 
+    solicitudCanjeBloc.obtenerSolicitudesCanje(widget.idTecnico);
   }
 
   @override
@@ -34,12 +34,11 @@ class _VerSolicitudesCanjePageState extends State<VerSolicitudesCanjePage> {
     solicitudCanjeBloc.dispose(); // Libera recursos
     super.dispose();
   }
+
   String obtenerNumeroSolicitud(String idSolicitudCanje) {
     // Divide la cadena por el guion "-" y toma la última parte
     return idSolicitudCanje.split('-').last;
   }
-  
-
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +48,7 @@ class _VerSolicitudesCanjePageState extends State<VerSolicitudesCanjePage> {
         stream: solicitudCanjeBloc.state,
         builder: (context, snapshot) {
           if (snapshot.data is SolicitudCanjeLoading) {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           }
 
           if (snapshot.data is SolicitudCanjeFailure) {
@@ -61,8 +60,18 @@ class _VerSolicitudesCanjePageState extends State<VerSolicitudesCanjePage> {
             stream: solicitudCanjeBloc.solicitudesStream,
             builder: (context, snapshot) {
               final solicitudes = snapshot.data ?? [];
+
               if (solicitudes.isEmpty) {
-                return Center(child: Text('Cargando ...'));
+                return const Center(
+                  child: Text(
+                    'Aún no has creado ninguna solicitud de canje.\nAquí aparecerán tus próximas solicitudes.',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.black54,
+                    ),
+                  ),
+                );
               }
 
               return ListView.builder(
@@ -114,7 +123,7 @@ class _VerSolicitudesCanjePageState extends State<VerSolicitudesCanjePage> {
                 SizedBox(width: 4),
                 Text(
                   solicitud.fechaHora_SolicitudCanje ?? 'No disponible',
-                  style: TextStyle(fontSize: 14, color: const Color.fromARGB(255, 0, 0, 0)),
+                  style: TextStyle(fontSize: 14, color: Colors.black),
                 ),
               ],
             ),

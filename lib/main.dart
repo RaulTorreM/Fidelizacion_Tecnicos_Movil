@@ -10,7 +10,7 @@ import 'services/api_service.dart';  // Asegúrate de que ApiService se importa 
 import 'dart:io';
 
 void main() {
-  // HttpOverrides.global = MyHttpOverrides(); //Quitarlo al momento de llevarlo a producción
+  HttpOverrides.global = MyHttpOverrides(); //Quitarlo al momento de llevarlo a producción
   runApp(MyApp());
 }
 
@@ -28,7 +28,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        // Página de Recompensas, ahora usando DioInstance().getApiService()
+        // Página de Recompensas
         ChangeNotifierProvider(create: (context) => RecompensaBloc(DioInstance().getApiService())),
 
         // Proveedor para PerfilRepository

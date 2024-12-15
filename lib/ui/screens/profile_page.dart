@@ -140,61 +140,55 @@ class _ProfilePageState extends State<ProfilePage> {
     return Card(
       elevation: 4,
       margin: const EdgeInsets.symmetric(vertical: 8),
-      child: ListTile(
-        title: const Text(
-          'Oficios',
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-        ),
-        subtitle: Column(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: oficios.map((oficio) => Text(oficio.nombreOficio)).toList(),
-        ),
-        trailing: IconButton(
-          icon: const Icon(Icons.search),
-          onPressed: () {
-            showDialog(
-              context: context,
-              builder: (context) => AlertDialog(
-                title: const Text('Detalles de Oficios'),
-                content: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: oficios
-                      .map(
-                        (oficio) => Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 8.0),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Expanded(
-                                flex: 1,
-                                child: Text(
-                                  oficio.nombreOficio,
-                                  style: const TextStyle(fontWeight: FontWeight.bold),
-                                ),
-                              ),
-                              const SizedBox(width: 10),
-                              Expanded(
-                                flex: 2,
-                                child: Text(
-                                  oficio.descripcion_Oficio,
-                                  style: const TextStyle(color: Colors.grey),
-                                ),
-                              ),
-                            ],
+          children: [
+            const Text(
+              'Oficios',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+            const Divider(),
+            ...oficios.map((oficio) {
+              return Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                child: Row(
+                  children: [
+                    Icon(Icons.work, color: Theme.of(context).primaryColor),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            oficio.nombreOficio,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                           ),
-                        ),
-                      )
-                      .toList(),
+                          const SizedBox(height: 4),
+                          Text(
+                            oficio.descripcion_Oficio,
+                            style: const TextStyle(
+                              color: Colors.grey,
+                              fontSize: 14,
+                            ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
-                actions: [
-                  TextButton(
-                    onPressed: () => Navigator.of(context).pop(),
-                    child: const Text('Cerrar'),
-                  ),
-                ],
-              ),
-            );
-          },
+              );
+            }).toList(),
+          ],
         ),
       ),
     );

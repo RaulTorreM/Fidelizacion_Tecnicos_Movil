@@ -18,8 +18,7 @@ part 'api_service.g.dart';
 abstract class ApiService {
   factory ApiService(Dio dio, {String? baseUrl}) = _ApiService;
 
-  @GET("csrf-token")
-  Future<CsrfResponse> getCsrfToken();
+
 
   @POST("/loginmovil/login-tecnicos")
   Future<LoginResponse> loginTecnico(@Body() LoginRequest loginRequest);
