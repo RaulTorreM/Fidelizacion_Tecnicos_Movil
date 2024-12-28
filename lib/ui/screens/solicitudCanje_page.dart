@@ -27,15 +27,11 @@ class _SolicitudCanjePageState extends State<SolicitudCanjePage> {
   final ApiService _apiService = DioInstance().getApiService();
 
   int _cantidadRecompensa = 1;
-  Recompensa? _selectedRecompensa; 
-
-
+  Recompensa? _selectedRecompensa;
   VentaIntermediada? _selectedVenta = null;
-
   List<Map<String, dynamic>> _recompensasAgregadas = [];
-  int _puntosCanjeados = 0; // Puntos utilizados en la tabla
+  int _puntosCanjeados = 0;
   late Future<List<VentaIntermediada>> _ventas;
-
 
   @override
   void initState() {
@@ -50,26 +46,19 @@ class _SolicitudCanjePageState extends State<SolicitudCanjePage> {
 
     Future.microtask(() {
       final profileBloc = Provider.of<ProfileBloc>(context, listen: false);
-      profileBloc.fetchPerfil(widget.idTecnico); 
+      profileBloc.fetchPerfil(widget.idTecnico);
 
       final recompensasBloc = Provider.of<RecompensaBloc>(context, listen: false);
       recompensasBloc.obtenerRecompensas();
-
-      
     });
-
-    
   }
 
   Future<List<VentaIntermediada>> _fetchVentas() async {
-    // Llamada a la API para obtener las ventas del técnico
     List<VentaIntermediada> ventas = await _apiService.getVentasIntermediadasSolicitudes(widget.idTecnico);
-    // Filtrar ventas que tienen estado 1 o 2 (En espera o Redimido parcial)
     return ventas.where((venta) => venta.idEstadoVenta == 1 || venta.idEstadoVenta == 2).toList();
   }
 
   String obtenerNumeroSolicitud(String idSolicitudCanje) {
-    // Divide la cadena por el guion "-" y toma la última parte
     return idSolicitudCanje.split('-').last;
   }
 
@@ -85,11 +74,12 @@ class _SolicitudCanjePageState extends State<SolicitudCanjePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Registrar nuevo canje'),
+        title: Text('Registrar Nuevo Canje', style: TextStyle(fontWeight: FontWeight.bold)),
+        backgroundColor: Color.fromARGB(255, 42, 93, 175), // Color moderno
         leading: IconButton(
-        icon: Icon(Icons.arrow_back),
-        onPressed: () {
-          Navigator.pop(context); 
+          icon: Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.pop(context); 
           },
         ),
       ),
@@ -99,10 +89,7 @@ class _SolicitudCanjePageState extends State<SolicitudCanjePage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                'Solo se pueden canjear las ventas intermediadas que tengan el estado En espera o Redimido (parcial).',
-                style: TextStyle(fontSize: 14, color: Colors.grey),
-              ),
+              _buildInfoText(),
               SizedBox(height: 16),
               _buildTechnicianInfo(),
               SizedBox(height: 16),
@@ -114,31 +101,60 @@ class _SolicitudCanjePageState extends State<SolicitudCanjePage> {
               SizedBox(height: 16),
               _buildResumen(),
               SizedBox(height: 16),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  ElevatedButton(
-                    onPressed: _limpiarTabla,
-                    child: Text('Limpiar tabla'),
-                  ),
-                  ElevatedButton(  
-                    onPressed: () {
-                    mostrarConfirmacionCanje(
-                      context: context,
-                      mensaje: '¿Estás seguro de realizar esta solicitud? \nNo podrás realizar nuevas solicitudes con la misma venta hasta que halla sido Aprobado o Rechazado',
-                      onConfirmar: _guardarCanje, // Pasas el método que quieres ejecutar
-                    );
-                  },
-                  child: Text('Guardar Canje'),
-                  style: ElevatedButton.styleFrom(backgroundColor: Colors.green,),
-                  
-                  ),
-                ],
-              ),
+              _buildActionButtons(),
             ],
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildInfoText() {
+    return Text(
+      'Solo se pueden canjear las ventas intermediadas que tengan el estado En espera o Redimido (parcial).',
+      style: TextStyle(fontSize: 14, color: Colors.grey, fontStyle: FontStyle.italic),
+    );
+  }
+
+ Widget _buildActionButtons() {
+    return Column(
+      children: [
+        SizedBox(height: 16),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            ElevatedButton.icon(
+              onPressed: _limpiarTabla,
+              icon: Icon(Icons.delete, color: Colors.white),
+              label: Text('Limpiar Tabla'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Color.fromARGB(255, 86, 147, 221), // Color más claro y visible
+                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                elevation: 5, // Sombra para un aspecto más profesional
+              ),
+            ),
+            SizedBox(width: 20),
+            ElevatedButton.icon(  
+              onPressed: () {
+                mostrarConfirmacionCanje(
+                  context: context,
+                  mensaje: '¿Estás seguro de realizar esta solicitud? \nNo podrás realizar nuevas solicitudes con la misma venta hasta que haya sido Aprobado o Rechazado',
+                  onConfirmar: _guardarCanje,
+                );
+              },
+              icon: Icon(Icons.check, color: Colors.white),
+              label: Text('Guardar Canje'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.green,
+                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                elevation: 5,
+              ),
+            ),
+          ],
+        ),
+      ],
     );
   }
 
@@ -149,26 +165,27 @@ class _SolicitudCanjePageState extends State<SolicitudCanjePage> {
   }) async {
     showDialog(
       context: context,
-      barrierDismissible: false, // Evitar cerrar el diálogo al tocar fuera de él
+      barrierDismissible: false,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Confirmar Canje'),
+          title: Text('Confirmar Canje', style: TextStyle(fontWeight: FontWeight.bold)),
           content: Text(mensaje),
           actions: [
             TextButton(
               onPressed: () {
-                // Cerrar el diálogo sin realizar ninguna acción
                 Navigator.of(context).pop();
               },
-              child: Text('No'),
+              child: Text('No', style: TextStyle(color: Colors.red)),
             ),
             ElevatedButton(
               onPressed: () {
-                // Ejecutar el método proporcionado y cerrar el diálogo
-                Navigator.of(context).pop(); // Cierra el diálogo antes de ejecutar
+                Navigator.of(context).pop();
                 onConfirmar();
               },
               child: Text('Sí'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.green,
+              ),
             ),
           ],
         );
@@ -624,7 +641,7 @@ class _SolicitudCanjePageState extends State<SolicitudCanjePage> {
     );
     }
 
-    void _limpiarTabla() {
+    void _limpiarPage() {
     setState(() {
       // Limpiar las recompensas agregadas y los puntos canjeados
       _recompensasAgregadas.clear();
@@ -632,6 +649,16 @@ class _SolicitudCanjePageState extends State<SolicitudCanjePage> {
       _comprobanteController.clear();
       _selectedVenta = null;
       _selectedRecompensa = null;
+      _cantidadRecompensa = 1;
+    });
+  }
+
+  void _limpiarTabla() {
+    setState(() {
+      // Limpiar las recompensas agregadas y los puntos canjeados
+      _recompensasAgregadas.clear();
+      _puntosCanjeados = 0;
+      _comprobanteController.clear();
       _cantidadRecompensa = 1;
     });
   }
@@ -683,7 +710,7 @@ class _SolicitudCanjePageState extends State<SolicitudCanjePage> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Canje guardado con éxito')),
         );
-        _limpiarTabla(); // Limpiar datos después del éxito
+        _limpiarPage(); // Limpiar datos después del éxito
       } else if (state is SolicitudCanjeFailure) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Error al guardar el canje: ${state.error}')),

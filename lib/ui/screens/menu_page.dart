@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'profile_page.dart';
 import 'historialVentas_page.dart';
 import '../../data/models/tecnico.dart';
-import '../screens/recompensas_page.dart'; 
-import '../screens/solicitudCanje_page.dart'; 
-import '../screens/verSolicitudesCanje_page.dart'; 
+import '../screens/recompensas_page.dart';
+import '../screens/solicitudCanje_page.dart';
+import '../screens/verSolicitudesCanje_page.dart';
 import '../../logic/login_bloc.dart';
 import 'package:provider/provider.dart';
-import 'home_page.dart'; 
+import 'home_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
@@ -15,7 +15,8 @@ class MenuPage extends StatefulWidget {
   final Tecnico tecnico;
   final bool isFirstLogin;
 
-  const MenuPage({Key? key, required this.tecnico, this.isFirstLogin = false}) : super(key: key);
+  const MenuPage({Key? key, required this.tecnico, this.isFirstLogin = false})
+      : super(key: key);
 
   @override
   _MenuPageState createState() => _MenuPageState();
@@ -24,35 +25,28 @@ class MenuPage extends StatefulWidget {
 class _MenuPageState extends State<MenuPage> {
   FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
-  String backgroundImage = 'assets/others/fondo_default.jpg';  // Fondo por defecto
+  String backgroundImage = 'assets/others/fondo_default.jpg';
 
   @override
   void initState() {
     super.initState();
 
-    // Mostrar el diálogo de cambio de contraseña si es el primer login
     if (widget.isFirstLogin) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         _showChangePasswordDialog();
       });
     }
 
-    // Comprobar si es el cumpleaños del técnico
     _checkBirthday();
-
-
   }
-
-
 
   void _checkBirthday() {
     DateTime currentDate = DateTime.now();
     DateTime birthDate = DateTime.parse(widget.tecnico.fechaNacimientoTecnico!);
 
-    if (currentDate.month == birthDate.month && currentDate.day == birthDate.day) {
-      // Usar addPostFrameCallback para esperar hasta que el widget esté listo
+    if (currentDate.month == birthDate.month &&
+        currentDate.day == birthDate.day) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        // Cambiar el fondo y mostrar el mensaje de cumpleaños
         setState(() {
           backgroundImage = 'assets/others/fondo_cumpleaños.jpg';
         });
@@ -66,15 +60,15 @@ class _MenuPageState extends State<MenuPage> {
       SnackBar(
         content: Text(
           '¡Feliz Cumpleaños!, ¡Te deseamos un excelente día!',
-          style: TextStyle(color: Colors.white),
+          style: const TextStyle(color: Colors.white),
         ),
-        backgroundColor: Colors.pinkAccent, // Color del banner
-        duration: Duration(seconds: 10), // Duración del banner
+        backgroundColor: Colors.pinkAccent,
+        duration: const Duration(seconds: 10),
       ),
     );
   }
 
-    void _showChangePasswordDialog() {
+  void _showChangePasswordDialog() {
     showDialog(
       context: context,
       builder: (context) {
@@ -99,7 +93,7 @@ class _MenuPageState extends State<MenuPage> {
           actions: [
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop(); // Cerrar el diálogo
+                Navigator.of(context).pop();
               },
               child: const Text(
                 'Entendido',
@@ -116,13 +110,11 @@ class _MenuPageState extends State<MenuPage> {
     );
   }
 
-
   Future<void> removeApiKey() async {
     final prefs = await SharedPreferences.getInstance();
-    prefs.remove('api_key'); // Eliminar la API Key
+    prefs.remove('api_key');
   }
 
-  // Lógica para cerrar sesión y redirigir al HomePage
   void _logout(BuildContext context) async {
     final loginBloc = Provider.of<LoginBloc>(context, listen: false);
     loginBloc.logout();
@@ -137,26 +129,31 @@ class _MenuPageState extends State<MenuPage> {
 
   @override
   Widget build(BuildContext context) {
-    
     return Scaffold(
-      
       appBar: AppBar(
-        automaticallyImplyLeading: false, 
-        title: Text('Bienvenido, ${widget.tecnico.nombreTecnico}'),
+        automaticallyImplyLeading: false,
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        title: Text(
+          'Bienvenido, ${widget.tecnico.nombreTecnico}',
+          style: const TextStyle(
+              fontWeight: FontWeight.bold, color: Colors.white),
+        ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: () {
-              _logout(context);  // Llama a la función de logout al presionar el botón
-            },
+            icon: const Icon(Icons.logout, color: Colors.white),
+            onPressed: () => _logout(context),
           ),
         ],
       ),
+      extendBodyBehindAppBar: true,
       body: Container(
         decoration: BoxDecoration(
           image: DecorationImage(
-            image: AssetImage(backgroundImage), // Usar el fondo dinámico
+            image: AssetImage(backgroundImage),
             fit: BoxFit.cover,
+            colorFilter: ColorFilter.mode(
+                Colors.black.withOpacity(0.4), BlendMode.darken),
           ),
         ),
         child: Padding(
@@ -166,50 +163,22 @@ class _MenuPageState extends State<MenuPage> {
             crossAxisSpacing: 16.0,
             mainAxisSpacing: 16.0,
             children: [
-              _buildMenuCard('Perfil', Icons.person, () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => ProfilePage(idTecnico: widget.tecnico.idTecnico),
-                  ),
-                );
-              }),
-              _buildMenuCard('Historial de Ventas', Icons.history, () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => HistorialVentasPage(idTecnico: widget.tecnico.idTecnico),
-                  ),
-                );
-              }),
-              _buildMenuCard('Recompensas', Icons.card_giftcard, () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const RecompensasPage(),
-                  ),
-                );
-              }),
-              _buildMenuCard('Solicitar Canje', Icons.badge, () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => SolicitudCanjePage(idTecnico: widget.tecnico.idTecnico),
-                  ),
-                );
-              }),
-              _buildMenuCard('Ver Solicitudes', Icons.queue_play_next, () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => VerSolicitudesCanjePage(idTecnico: widget.tecnico.idTecnico),
-                  ),
-                );
-              }),
+              _buildMenuCard('Perfil', Icons.person, () => _navigateTo(ProfilePage(idTecnico: widget.tecnico.idTecnico))),
+              _buildMenuCard('Historial de Ventas', Icons.history, () => _navigateTo(HistorialVentasPage(idTecnico: widget.tecnico.idTecnico))),
+              _buildMenuCard('Recompensas', Icons.card_giftcard, () => _navigateTo(const RecompensasPage())),
+              _buildMenuCard('Solicitar Canje', Icons.badge, () => _navigateTo(SolicitudCanjePage(idTecnico: widget.tecnico.idTecnico))),
+              _buildMenuCard('Ver Solicitudes', Icons.queue_play_next, () => _navigateTo(VerSolicitudesCanjePage(idTecnico: widget.tecnico.idTecnico))),
             ],
           ),
         ),
       ),
+    );
+  }
+
+  void _navigateTo(Widget page) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => page),
     );
   }
 
@@ -217,38 +186,28 @@ class _MenuPageState extends State<MenuPage> {
     return GestureDetector(
       onTap: onTap,
       child: Card(
-        color: const Color.fromARGB(255, 49, 50, 99),
+        elevation: 8,
+        shadowColor: Colors.black.withOpacity(0.2),
+        color: const Color(0xFF313263),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(16),
         ),
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                icon,
-                size: 40,
-                color: const Color.fromARGB(255, 239, 239, 240),
-              ),
-              const SizedBox(height: 8),
-              FittedBox(
-                fit: BoxFit.scaleDown,
-                child: Text(
-                  title,
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Color.fromARGB(255, 255, 255, 255),
-                  ),
-                ),
-              ),
-            ],
-          ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, size: 50, color: Colors.white),
+            const SizedBox(height: 10),
+            Text(
+              title,
+              style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold),
+              textAlign: TextAlign.center,
+            ),
+          ],
         ),
       ),
     );
   }
-
 }

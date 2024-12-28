@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import '../data/repositories/tecnico_repository.dart';
 import '../services/api_service.dart';
@@ -26,40 +27,45 @@ class LoginBloc with ChangeNotifier {
     notifyListeners();
 
     try {
-      // Crear el objeto LoginRequest con los datos de login
       final loginRequest = LoginRequest(
-        // celularTecnico: "964866527",
-        // password: "77043114",
-        celularTecnico: celular, 
+        celularTecnico: celular,
         password: password,
       );
 
-      // Llamar al método loginTecnico del repositorio
       final loginResponse = await _tecnicoRepository.loginTecnico(loginRequest);
 
       if (loginResponse.status == 'success') {
         isFirstLogin = loginResponse.isFirstLogin;
 
-
         final prefs = await SharedPreferences.getInstance();
         await prefs.setString('apikey', loginResponse.apiKey);
-        // Obtener detalles del técnico
         await obtenerDetallesTecnico(loginResponse.idTecnico);
 
-        // Verificar si es el primer inicio de sesión
         if (isFirstLogin) {
           showChangePasswordDialog(context); // Mostrar un diálogo para cambiar la contraseña
         }
       } else {
-        _error = loginResponse.message;
+        _error = 'Las credenciales son incorrectas, intente nuevamente.';
       }
     } catch (e) {
-      _error = 'Error desconocido: $e';
+      if (e is DioException) {
+        // Error relacionado con la conexión a internet
+        if (e.type == DioExceptionType) {
+          _error = 'No hay conexión a internet. Verifique su conexión.';
+        } else {
+          _error = 'Error de red. Intente más tarde.';
+        }
+      } else if (e is FormatException) {
+        _error = 'Formato de datos incorrecto.';
+      } else {
+        _error = 'Credenciales Incorrectos. Intente nuevamente.';
+      }
     } finally {
       _isLoading = false;
       notifyListeners();
     }
   }
+
 
   // Método para obtener los detalles del técnico desde el repositorio
   Future<void> obtenerDetallesTecnico(String idTecnico) async {

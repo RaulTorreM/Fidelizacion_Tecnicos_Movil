@@ -57,17 +57,17 @@ class LoginPage extends StatelessWidget {
             ),
           ),
         );
-      } else if (loginBloc.error != null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Las Credenciales Ingresadas son Invalidas, intentelo nuevamente.")),
-        );
       } else {
+        String errorMessage = loginBloc.error ?? 'Ocurrió un error desconocido.';
+
+        // Mostrar el mensaje de error adecuado
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: const Text('Error desconocido.')),
+          SnackBar(content: Text(errorMessage)),
         );
       }
     }
   }
+
 
   @override
   Widget build(BuildContext context) {
