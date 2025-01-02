@@ -25,5 +25,7 @@ class VentaIntermediadaRepository {
       throw Exception('Error al obtener ventas intermediadas: $e');
     }
   }
+
+  
   
 }

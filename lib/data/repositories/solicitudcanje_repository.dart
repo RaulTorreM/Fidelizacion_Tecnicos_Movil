@@ -40,5 +40,19 @@ class SolicitudCanjeRepository {
     }
   }
 
+  Future<bool> eliminarSolicitudCanje(String idSolicitudCanje) async {
+    try {
+      final response = await apiService.eliminarSolicitudCanje(idSolicitudCanje);
+      if (response['message'] == 'Solicitud eliminada exitosamente.') {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (e) {
+      print('Error al eliminar la solicitud: $e');
+      return false;
+    }
+  }
+
 }
 

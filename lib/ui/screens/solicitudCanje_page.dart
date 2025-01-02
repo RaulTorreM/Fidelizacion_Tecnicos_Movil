@@ -10,6 +10,7 @@ import '../../data/models/recompensa.dart';
 import '../../data/models/solicitud_canje.dart';
 import '../../data/models/solicitud_canje_recompensa.dart';
 import '../../services/api_service.dart';
+import 'verSolicitudesCanje_page.dart';
 
 class SolicitudCanjePage extends StatefulWidget {
   final String idTecnico;
@@ -685,20 +686,18 @@ class _SolicitudCanjePageState extends State<SolicitudCanjePage> {
       idVentaIntermediada: _selectedVenta!.idVentaIntermediada,
       idTecnico: widget.idTecnico,
       recompensas: recompensas,
-      puntosCanjeados_SolicitudCanje : _puntosCanjeados
+      puntosCanjeados_SolicitudCanje: _puntosCanjeados,
     );
-
 
     // Mostrar un indicador de carga mientras se envía la solicitud
     showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (_) => Center(child: CircularProgressIndicator()),
-      );
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => Center(child: CircularProgressIndicator()),
+    );
 
     // Llamar al Bloc para guardar la solicitud
     solicitudCanjeBloc.guardarSolicitudCanje(solicitudCanje);
-
 
     // Escuchar el estado del Bloc para manejar los resultados
     solicitudCanjeBloc.state.listen((state) {
@@ -707,18 +706,55 @@ class _SolicitudCanjePageState extends State<SolicitudCanjePage> {
           SnackBar(content: Text('Guardando canje...')),
         );
       } else if (state is SolicitudCanjeSuccess) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Canje guardado con éxito')),
+        Navigator.pop(context); // Cerrar el diálogo de carga
+
+        // Mostrar un diálogo de éxito
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (context) {
+            return AlertDialog(
+              title: Row(
+                children: [
+                  Icon(Icons.check_circle, color: Colors.green),
+                  SizedBox(width: 10),
+                  Text('¡Solicitud Creada!'),
+                ],
+              ),
+              content: Text(
+                'Tu solicitud se guardó correctamente. Tus solicitudes creadas se podrán ver en la página de solicitudes.',
+                style: TextStyle(fontSize: 16),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context); // Cerrar el diálogo
+                    Navigator.of(context).pop();
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => VerSolicitudesCanjePage(idTecnico: widget.idTecnico),
+                      ),
+                    );
+                  },
+                  child: Text(
+                    'Ver solicitudes',
+                    style: TextStyle(color: Colors.blue, fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ],
+            );
+          },
         );
+
         _limpiarPage(); // Limpiar datos después del éxito
       } else if (state is SolicitudCanjeFailure) {
+        Navigator.pop(context); // Cerrar el diálogo de carga
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Error al guardar el canje: ${state.error}')),
         );
       }
     });
-    Navigator.pop(context);
-    
   }
 
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import '../../data/models/solicitud_canje_detalle.dart';
 import '../../services/api_service.dart';
 import '../../logic/solicitud_canje_bloc.dart';
@@ -21,8 +22,8 @@ class _SolicitudCanjeDetallesPageState extends State<SolicitudCanjeDetallesPage>
   void initState() {
     super.initState();
     solicitudCanjeBloc = SolicitudCanjeBloc(
-    solicitudCanjeRepository: SolicitudCanjeRepository(
-      apiService: DioInstance().getApiService(), // Aquí usamos la instancia compartida
+      solicitudCanjeRepository: SolicitudCanjeRepository(
+        apiService: DioInstance().getApiService(),
       ),
     );
     solicitudCanjeBloc.obtenerSolicitudCanjeDetalles(widget.idSolicitud);
@@ -33,11 +34,21 @@ class _SolicitudCanjeDetallesPageState extends State<SolicitudCanjeDetallesPage>
     solicitudCanjeBloc.dispose();
     super.dispose();
   }
+
   String obtenerNumeroSolicitud(String idSolicitudCanje) {
-    // Divide la cadena por el guion "-" y toma la última parte
     return idSolicitudCanje.split('-').last;
   }
 
+ bool esEliminable(String fechaHoraSolicitud) {
+    try {
+      final fechaSolicitud = convertirStringADateTime(fechaHoraSolicitud);
+      final diferencia = DateTime.now().difference(fechaSolicitud);
+      return diferencia.inMinutes <= 5;
+    } catch (e) {
+      // Si la conversión falla, asumimos que no es eliminable
+      return false;
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -60,17 +71,20 @@ class _SolicitudCanjeDetallesPageState extends State<SolicitudCanjeDetallesPage>
 
             return Column(
               children: [
-                
                 const SizedBox(height: 8),
                 Card(
                   color: const Color.fromARGB(255, 5, 59, 110),
                   margin: EdgeInsets.zero,
                   child: ListTile(
-                    leading: Icon(Icons.star, color: const Color.fromARGB(255, 235, 235, 235)),
+                    leading: Icon(Icons.star,
+                        color: const Color.fromARGB(255, 235, 235, 235)),
                     title: Text(
-                      'Puntos Totales de la Venta : '+detalles.puntosComprobante_SolicitudCanje.toString(),
+                      'Puntos Totales de la Venta : ' +
+                          detalles.puntosComprobante_SolicitudCanje.toString(),
                       style: TextStyle(
-                          fontSize: 20, fontWeight: FontWeight.bold, color: const Color.fromARGB(255, 255, 255, 255)),
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: const Color.fromARGB(255, 255, 255, 255)),
                     ),
                   ),
                 ),
@@ -87,6 +101,9 @@ class _SolicitudCanjeDetallesPageState extends State<SolicitudCanjeDetallesPage>
                           _buildMainCard(detalles),
                           SizedBox(height: 16),
                           _buildRecompensasTable(detalles),
+                          if (esEliminable(detalles.fechaHora_SolicitudCanje))
+                          _buildEliminarButton(detalles.idSolicitudCanje, detalles.fechaHora_SolicitudCanje),
+
                         ],
                       ),
                     ),
@@ -133,7 +150,6 @@ class _SolicitudCanjeDetallesPageState extends State<SolicitudCanjeDetallesPage>
           'Días transcurridos de la venta: ${detalles.diasTranscurridos_SolicitudCanje}',
           style: TextStyle(fontSize: 14, color: Colors.black54),
         ),
-        
       ),
     );
   }
@@ -146,27 +162,29 @@ class _SolicitudCanjeDetallesPageState extends State<SolicitudCanjeDetallesPage>
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildDetailRow(Icons.receipt,'Solicitud N°', obtenerNumeroSolicitud(detalles.idSolicitudCanje)),
-            _buildDetailRow(Icons.shopping_cart,'Venta N°', obtenerNumeroSolicitud(detalles.idVentaIntermediada) ),
-            _buildDetailRow(Icons.calendar_today,'Fecha de Emisión',
+            _buildDetailRow(Icons.receipt, 'Solicitud N°',
+                obtenerNumeroSolicitud(detalles.idSolicitudCanje)),
+            _buildDetailRow(Icons.shopping_cart, 'Venta N°',
+                obtenerNumeroSolicitud(detalles.idVentaIntermediada)),
+            _buildDetailRow(Icons.calendar_today, 'Fecha de Emisión',
                 detalles.fechaHoraEmision_VentaIntermediada),
-            _buildDetailRow(Icons.person,'Técnico', detalles.idTecnico),
-            _buildDetailRow(Icons.star_outline_sharp,
-                'Puntos Canjeados', '${detalles.puntosCanjeados_SolicitudCanje}'),
-            _buildDetailRow(Icons.star_half_outlined,'Puntos Restantes',
+            _buildDetailRow(Icons.person, 'Técnico', detalles.idTecnico),
+            _buildDetailRow(Icons.star_outline_sharp, 'Puntos Canjeados',
+                '${detalles.puntosCanjeados_SolicitudCanje}'),
+            _buildDetailRow(Icons.star_half_outlined, 'Puntos Restantes',
                 '${detalles.puntosRestantes_SolicitudCanje}'),
-            _buildDetailRow(Icons.info,
-                'Estado', detalles.nombre_EstadoSolicitudCanje),
+            _buildDetailRow(Icons.info, 'Estado',
+                detalles.nombre_EstadoSolicitudCanje),
             if (detalles.comentario_SolicitudCanje != null)
-              _buildDetailRow(Icons.comment,
-                  'Comentario', detalles.comentario_SolicitudCanje ?? ''),
+              _buildDetailRow(Icons.comment, 'Comentario',
+                  detalles.comentario_SolicitudCanje ?? ''),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildDetailRow(IconData icon ,String label, String value) {
+  Widget _buildDetailRow(IconData icon, String label, String value) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4.0),
       child: Row(
@@ -200,7 +218,7 @@ class _SolicitudCanjeDetallesPageState extends State<SolicitudCanjeDetallesPage>
     return Table(
       border: TableBorder.all(color: Colors.grey),
       columnWidths: {
-        0: FlexColumnWidth(2), // Más espacio para la columna de nombre
+        0: FlexColumnWidth(2),
         1: FixedColumnWidth(60),
         2: FixedColumnWidth(60),
         3: FixedColumnWidth(80),
@@ -281,4 +299,88 @@ class _SolicitudCanjeDetallesPageState extends State<SolicitudCanjeDetallesPage>
       ),
     );
   }
+
+  Widget _buildEliminarButton(String idSolicitud, String fechaHoraSolicitudString) {
+    final fechaHoraSolicitud = convertirStringADateTime(fechaHoraSolicitudString);
+    final tiempoRestante = calcularTiempoRestante(fechaHoraSolicitud);
+
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 16.0),
+          child: Center(
+            child: ElevatedButton.icon(
+              style: ElevatedButton.styleFrom(
+                foregroundColor: Colors.white,
+                backgroundColor: Colors.red,
+                padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+              icon: Icon(Icons.delete),
+              label: Text(
+                'Eliminar Solicitud',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ),
+              onPressed: () async {
+                final confirm = await showDialog<bool>(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                    title: Text('Confirmar Eliminación'),
+                    content: Text(
+                        '¿Está seguro de que desea eliminar esta solicitud?'),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.of(context).pop(false),
+                        child: Text('Cancelar'),
+                      ),
+                      ElevatedButton(
+                        onPressed: () => Navigator.of(context).pop(true),
+                        child: Text('Eliminar'),
+                      ),
+                    ],
+                  ),
+                );
+
+                if (confirm == true) {
+                  solicitudCanjeBloc.eliminarSolicitudCanje(idSolicitud);
+                  Navigator.of(context).pop(true);
+                }
+              },
+            ),
+          ),
+        ),
+        if (tiempoRestante.inMinutes <= 5)
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10.0),
+            child: Text(
+              'Tienes ${tiempoRestante.inMinutes+1} minuto(s) para eliminar esta solicitud recién creada.',
+              style: TextStyle(
+                fontSize: 10,
+                fontWeight: FontWeight.w500,
+                color: Colors.redAccent,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ),
+      ],
+    );
+  }
+
+  DateTime convertirStringADateTime(String fechaHoraSolicitud) {
+    try {
+      return DateTime.parse(fechaHoraSolicitud); // Conversión estándar
+    } catch (e) {
+      // Manejo del formato personalizado, si es necesario
+      throw FormatException('Formato de fecha no válido: $fechaHoraSolicitud');
+    }
+  }
+
+  Duration calcularTiempoRestante(DateTime fechaHoraSolicitud) {
+    final tiempoLimite = fechaHoraSolicitud.add(Duration(minutes: 5));
+    return tiempoLimite.difference(DateTime.now());
+  }
+
+
 }

@@ -44,43 +44,34 @@ class _VerSolicitudesCanjePageState extends State<VerSolicitudesCanjePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text('Solicitudes de Canje')),
-      body: StreamBuilder<SolicitudCanjeState>(
-        stream: solicitudCanjeBloc.state,
+      body: StreamBuilder<List<SolicitudCanjeResumen>>(
+        stream: solicitudCanjeBloc.solicitudesStream,
         builder: (context, snapshot) {
-          if (snapshot.data is SolicitudCanjeLoading) {
+          final solicitudes = snapshot.data ?? [];
+
+          if (snapshot.connectionState == ConnectionState.waiting &&
+              solicitudes.isEmpty) {
             return const Center(child: CircularProgressIndicator());
           }
 
-          if (snapshot.data is SolicitudCanjeFailure) {
-            final errorState = snapshot.data as SolicitudCanjeFailure;
-            return Center(child: Text('Error: ${errorState.error}'));
+          if (solicitudes.isEmpty) {
+            return const Center(
+              child: Text(
+                'Aún no has creado ninguna solicitud de canje.\nAquí aparecerán tus próximas solicitudes.',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.black54,
+                ),
+              ),
+            );
           }
 
-          return StreamBuilder<List<SolicitudCanjeResumen>>(
-            stream: solicitudCanjeBloc.solicitudesStream,
-            builder: (context, snapshot) {
-              final solicitudes = snapshot.data ?? [];
-
-              if (solicitudes.isEmpty) {
-                return const Center(
-                  child: Text(
-                    'Aún no has creado ninguna solicitud de canje.\nAquí aparecerán tus próximas solicitudes.',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.black54,
-                    ),
-                  ),
-                );
-              }
-
-              return ListView.builder(
-                itemCount: solicitudes.length,
-                itemBuilder: (context, index) {
-                  final solicitud = solicitudes[index];
-                  return _buildSolicitudCard(solicitud);
-                },
-              );
+          return ListView.builder(
+            itemCount: solicitudes.length,
+            itemBuilder: (context, index) {
+              final solicitud = solicitudes[index];
+              return _buildSolicitudCard(solicitud);
             },
           );
         },
@@ -129,8 +120,8 @@ class _VerSolicitudesCanjePageState extends State<VerSolicitudesCanjePage> {
             ),
           ],
         ),
-        onTap: () {
-          Navigator.push(
+        onTap: () async {
+          final resultado = await Navigator.push(
             context,
             MaterialPageRoute(
               builder: (context) => SolicitudCanjeDetallesPage(
@@ -138,6 +129,11 @@ class _VerSolicitudesCanjePageState extends State<VerSolicitudesCanjePage> {
               ),
             ),
           );
+
+          if (resultado == true) {
+            await Future.delayed(Duration(milliseconds: 300));
+           solicitudCanjeBloc.obtenerSolicitudesCanje(widget.idTecnico);
+          }
         },
       ),
     );

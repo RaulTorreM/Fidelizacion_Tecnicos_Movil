@@ -64,7 +64,14 @@ abstract class ApiService {
 
   @GET("/solicitudes-canje/{idSolicitud}/detalles")
   Future<SolicitudCanjeDetalles> obtenerSolicitudCanjeDetalles(@Path("idSolicitud") String idSolicitud);
+
+  @DELETE("/solicitudes-canje/delete/{idSolicitudCanje}")
+  Future<Map<String, dynamic>> eliminarSolicitudCanje(
+    @Path("idSolicitudCanje") String idSolicitudCanje,
+);
+
 }
+
 
 class DioInstance {
   static final DioInstance _instance = DioInstance._internal();

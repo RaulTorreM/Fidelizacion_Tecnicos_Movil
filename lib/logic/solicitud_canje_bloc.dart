@@ -28,30 +28,39 @@ class SolicitudCanjeBloc {
   }
 
   void obtenerSolicitudesCanje(String idTecnico) async {
-    _stateController.add(SolicitudCanjeLoading());
-    try {
-      final solicitudes = await solicitudCanjeRepository.obtenerSolicitudesCanjeResumen(idTecnico);
-      _solicitudesController.add(solicitudes);
-      _stateController.add(SolicitudCanjeSuccess());
-    } catch (e) {
-      _stateController.add(SolicitudCanjeFailure('Error al obtener las solicitudes: $e'));
-    }
+  try {
+    _stateController.add(SolicitudCanjeLoading()); // Indica que se está cargando
+    final nuevasSolicitudes = await solicitudCanjeRepository.obtenerSolicitudesCanjeResumen(idTecnico);
+    _solicitudesController.add(nuevasSolicitudes); // Emite las nuevas solicitudes
+  } catch (e) {
+    _stateController.add(SolicitudCanjeFailure( e.toString())); // Manejo de errores
   }
+}
+
 
   void obtenerSolicitudCanjeDetalles(String idSolicitud) async {
-  try {
-    final detalles = await solicitudCanjeRepository.obtenerSolicitudCanjeDetalles(idSolicitud);
-
-    _stateController.add(SolicitudCanjeDetallesSuccess(detalles));
+    try {
+      final detalles = await solicitudCanjeRepository.obtenerSolicitudCanjeDetalles(idSolicitud);
+      _stateController.add(SolicitudCanjeDetallesSuccess(detalles));
     } catch (e) {
-
       _stateController.add(SolicitudCanjeFailure('Error al obtener los detalles: $e'));
     }
   }
 
-
-
-
+  void eliminarSolicitudCanje(String idSolicitudCanje) async {
+    _stateController.add(SolicitudCanjeLoading());
+    try {
+      final resultado = await solicitudCanjeRepository.eliminarSolicitudCanje(idSolicitudCanje);
+      if (resultado) {
+        _stateController.add(SolicitudCanjeEliminadaSuccess());
+        obtenerSolicitudesCanje(''); // Actualizar lista tras eliminar
+      } else {
+        _stateController.add(SolicitudCanjeFailure('No se pudo eliminar la solicitud.'));
+      }
+    } catch (e) {
+      _stateController.add(SolicitudCanjeFailure('Error al eliminar la solicitud: $e'));
+    }
+  }
 
   void dispose() {
     _stateController.close();
@@ -68,16 +77,13 @@ class SolicitudCanjeLoading extends SolicitudCanjeState {}
 
 class SolicitudCanjeSuccess extends SolicitudCanjeState {}
 
-
 class SolicitudCanjeDetallesSuccess extends SolicitudCanjeState {
   final SolicitudCanjeDetalles detalles;
 
   SolicitudCanjeDetallesSuccess(this.detalles);
-
-  get solicitudCanje => null;
 }
 
-
+class SolicitudCanjeEliminadaSuccess extends SolicitudCanjeState {}
 
 class SolicitudCanjeFailure extends SolicitudCanjeState {
   final String error;
