@@ -102,7 +102,11 @@ class _SolicitudCanjeDetallesPageState extends State<SolicitudCanjeDetallesPage>
                           SizedBox(height: 16),
                           _buildRecompensasTable(detalles),
                           if (esEliminable(detalles.fechaHora_SolicitudCanje))
-                          _buildEliminarButton(detalles.idSolicitudCanje, detalles.fechaHora_SolicitudCanje),
+                            if(detalles.nombre_EstadoSolicitudCanje != 'Aprobado' && detalles.nombre_EstadoSolicitudCanje != 'Rechazado')
+                              _buildEliminarButton(detalles.idSolicitudCanje, detalles.fechaHora_SolicitudCanje),
+                            
+                            
+                          
 
                         ],
                       ),

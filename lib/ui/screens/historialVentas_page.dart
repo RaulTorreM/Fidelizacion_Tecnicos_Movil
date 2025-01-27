@@ -72,7 +72,7 @@ class _HistorialVentasPageState extends State<HistorialVentasPage> {
                   child: Text(
                     'Aún no tienes ventas intermediadas registradas.\nAquí aparecerán tus próximas ventas vinculadas.',
                     textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 16, color: Colors.black54),
+                    style: TextStyle(fontSize: 16, color: Color.fromARGB(255, 255, 255, 255)),
                   ),
                 );
               } else {
@@ -89,7 +89,7 @@ class _HistorialVentasPageState extends State<HistorialVentasPage> {
                 child: Text(
                   'Aún no tienes ventas intermediadas registradas.\nAquí aparecerán tus próximas ventas vinculadas.',
                   textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 16, color: Colors.black54),
+                  style: TextStyle(fontSize: 16, color: Color.fromARGB(255, 255, 255, 255)),
                 ),
               );
             }
