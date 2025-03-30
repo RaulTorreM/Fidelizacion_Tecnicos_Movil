@@ -28,8 +28,10 @@ class LoginBloc with ChangeNotifier {
 
     try {
       final loginRequest = LoginRequest(
-        celularTecnico: celular,
-        password: password,
+        celularTecnico: "999888777",
+        password: "77665544",
+        // celularTecnico: celular,
+        // password: password,
       );
 
       final loginResponse = await _tecnicoRepository.loginTecnico(loginRequest);
@@ -120,4 +122,6 @@ class LoginBloc with ChangeNotifier {
     _error = null;
     notifyListeners();
   }
+
+  
 }

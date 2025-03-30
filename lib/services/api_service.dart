@@ -5,7 +5,7 @@ import '../data/models/login_request.dart';
 import '../data/models/login_response.dart';
 import '../data/models/tecnico.dart';
 import '../data/models/venta_intermediada.dart';
-import '../data/models/csrf_response.dart';
+import '../data/models/notification_venta.dart';
 import '../data/models/recompensa.dart';
 import '../data/models/tecnico_response.dart';
 import '../data/models/solicitud_canje_detalle.dart';
@@ -67,8 +67,13 @@ abstract class ApiService {
 
   @DELETE("/solicitudes-canje/delete/{idSolicitudCanje}")
   Future<Map<String, dynamic>> eliminarSolicitudCanje(
-    @Path("idSolicitudCanje") String idSolicitudCanje,
-);
+      @Path("idSolicitudCanje") String idSolicitudCanje,
+  );
+
+  @GET("/notificaciones/{idTecnico}")
+  Future<List<TecnicoNotification>> getNotifications(
+    @Path("idTecnico") String idTecnico,
+  );
 
 }
 

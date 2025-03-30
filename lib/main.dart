@@ -6,12 +6,16 @@ import 'logic/login_bloc.dart';
 import 'logic/profile_bloc.dart';
 import 'logic/venta_intermediada_bloc.dart';  // Corregido el nombre del archivo
 import 'data/repositories/perfil_repository.dart';
+import 'data/repositories/notification_repository.dart';
 import 'services/api_service.dart';  // Asegúrate de que ApiService se importa correctamente
 import 'dart:io';
+import 'package:intl/date_symbol_data_local.dart';
 
 void main() {
-  HttpOverrides.global = MyHttpOverrides(); //Quitarlo al momento de llevarlo a producción
-  runApp(MyApp());
+  // HttpOverrides.global = MyHttpOverrides(); //Quitarlo al momento de llevarlo a producción
+  initializeDateFormatting('es_ES', null).then((_) {
+    runApp(MyApp());
+  });
 }
 
 //Función solamente para Desarrollo (SSL en emuladores), Quitarlo al momento de llevarlo a producción junto con la linea marcada en Main
@@ -28,22 +32,48 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        // Página de Recompensas
-        ChangeNotifierProvider(create: (context) => RecompensaBloc(DioInstance().getApiService())),
-
-        // Proveedor para PerfilRepository
-        Provider<PerfilRepository>(create: (context) => PerfilRepository(DioInstance().getApiService())),
-
-        // Proveedor para LoginBloc
-        ChangeNotifierProvider<LoginBloc>(create: (context) => LoginBloc(DioInstance().getApiService())),
-
-        // Proveedor para VentasIntermediadasBloc
-        ChangeNotifierProvider<VentasIntermediadasBloc>(
-          create: (context) => VentasIntermediadasBloc(DioInstance().getApiService()),
+        // Proveedor principal para ApiService
+        Provider<ApiService>(
+          create: (context) => DioInstance().getApiService(),
         ),
 
-        // Proveedor para ProfileBloc
-        ChangeNotifierProvider<ProfileBloc>(create: (context) => ProfileBloc(Provider.of<PerfilRepository>(context, listen: false))),
+        // Proveedor para NotificationRepository
+        Provider<NotificationRepository>(
+          create: (context) => NotificationRepository(
+            Provider.of<ApiService>(context, listen: false)
+          ),
+        ),
+
+        // Proveedores actualizados usando la instancia existente de ApiService
+        ChangeNotifierProvider(
+          create: (context) => RecompensaBloc(
+            Provider.of<ApiService>(context, listen: false)
+          ),
+        ),
+
+        Provider<PerfilRepository>(
+          create: (context) => PerfilRepository(
+            Provider.of<ApiService>(context, listen: false)
+          ),
+        ),
+
+        ChangeNotifierProvider<LoginBloc>(
+          create: (context) => LoginBloc(
+            Provider.of<ApiService>(context, listen: false)
+          ),
+        ),
+
+        ChangeNotifierProvider<VentasIntermediadasBloc>(
+          create: (context) => VentasIntermediadasBloc(
+            Provider.of<ApiService>(context, listen: false)
+          ),
+        ),
+
+        ChangeNotifierProvider<ProfileBloc>(
+          create: (context) => ProfileBloc(
+            Provider.of<PerfilRepository>(context, listen: false)
+          ),
+        ),
       ],
       child: MaterialApp(
         title: 'Club de Técnicos',
