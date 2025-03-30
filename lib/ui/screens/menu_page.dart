@@ -39,14 +39,25 @@ class _MenuPageState extends State<MenuPage> {
     super.initState();
 
     
-    // Obtener el repository del contexto
-  final notificationRepository = Provider.of<NotificationRepository>(
-    context, 
-    listen: false
-  );
+ 
+    final notificationRepository = Provider.of<NotificationRepository>(context, listen: false);
+    _notificationBloc = NotificationBloc(notificationRepository);
+
+    // Inicializar el bloc usando el provider
+    final notificationBloc = Provider.of<NotificationBloc>(
+      context, 
+      listen: false
+    );
+
+    notificationBloc.loadNotifications(widget.tecnico.idTecnico);
   
-  // Inicializar el bloc
-  _notificationBloc = NotificationBloc(notificationRepository);
+
+   WidgetsBinding.instance.addPostFrameCallback((_) {
+      _checkBirthday();
+      // Forzar recarga al reiniciar
+      _notificationBloc.loadNotifications(widget.tecnico.idTecnico);
+    });
+
 
     if (widget.isFirstLogin) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -54,47 +65,107 @@ class _MenuPageState extends State<MenuPage> {
       });
     }
 
-    _checkBirthday();
-    
   }
+
   @override
   void dispose() {
     ScaffoldMessenger.of(context).clearSnackBars();
     super.dispose();
   }
 
+  @override
+
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Escuchar cambios en las notificaciones
+    _notificationBloc.addListener(() {
+      if (mounted) setState(() {});
+    });
+  }
+
+
+  Widget _buildNotificationIcon() {
+  return Consumer<NotificationBloc>(
+    builder: (context, bloc, _) {
+      final count = bloc.notifications.length;
+      return Stack(
+        children: [
+          IconButton(
+            icon: Icon(Icons.notifications, color: Colors.white),
+            onPressed: () {
+              if (count > 0) {
+                _openNotificationsDialog(bloc.notifications);
+              }
+            },
+          ),
+          if (count > 0)
+            Positioned(
+              right: 8,
+              top: 8,
+              child: Container(
+                padding: EdgeInsets.all(2),
+                decoration: BoxDecoration(
+                  color: Colors.red,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                constraints: BoxConstraints(
+                  minWidth: 18,
+                  minHeight: 18,
+                ),
+                child: Text(
+                  count.toString(),
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 12,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            )
+        ],
+      );
+    },
+  );
+}
 
 
   Future<void> _loadNotifications() async {
-  try {
-    await _notificationBloc.loadNotifications(widget.tecnico.idTecnico);
-    
-    if (!mounted) return; 
-    
-    final notifications = _notificationBloc.notifications;
-    
-    if (notifications.isEmpty) return;
+    try {
+      await _notificationBloc.loadNotifications(widget.tecnico.idTecnico);
+      
+      if (!mounted) return; 
+      
+      final notifications = _notificationBloc.notifications;
+      
+      if (notifications.isEmpty) return;
 
-    if (notifications.length == 1) {
-      _showSingleNotification(notifications.first);
-    } else {
-      _showMultipleNotifications(notifications);
+      if (notifications.isNotEmpty) {
+        if (notifications.length == 1) {
+          _showSingleNotification(notifications.first);
+        } else {
+          _showMultipleNotifications(notifications);
+        }
+      }
+    } catch (e, stackTrace) {
+      print('Error en MenuPage: $e');
+      print('Stack trace: $stackTrace');
     }
-  } catch (e, stackTrace) {
-    print('Error en MenuPage: $e');
-    print('Stack trace: $stackTrace');
   }
-}
 
 void _showSingleNotification(TecnicoNotification notification) {
   final theme = Theme.of(context);
   final isBirthday = notification.description.contains('Cumpleaños');
+  final isVentaNotification = notification.idVentaIntermediada != null;
 
   final snackBar = SnackBar(
     content: Row(
       children: [
         Icon(
-          isBirthday ? Icons.cake_rounded : Icons.notifications_active_rounded,
+          isBirthday 
+              ? Icons.cake_rounded 
+              : isVentaNotification
+                  ? Icons.receipt_long
+                  : Icons.notifications_active_rounded,
           color: Colors.white,
           size: 28,
         ),
@@ -150,7 +221,21 @@ void _showSingleNotification(TecnicoNotification notification) {
       label: 'Ver',
       textColor: Colors.white,
       backgroundColor: Colors.black.withOpacity(0.1),
-      onPressed: () => _openNotificationsDialog([notification]),
+      onPressed: () {
+        if (isVentaNotification) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => SolicitudCanjePage(
+                idTecnico: widget.tecnico.idTecnico,
+                idVentaIntermediada: notification.idVentaIntermediada,
+              ),
+            ),
+          );
+        } else {
+          _openNotificationsDialog([notification]);
+        }
+      },
     ),
   );
 
@@ -181,161 +266,170 @@ void _showMultipleNotifications(List<TecnicoNotification> notifications) {
 }
 
   void _openNotificationsDialog(List<TecnicoNotification> notifications) {
-  final colorScheme = Theme.of(context).colorScheme;
-  final textTheme = Theme.of(context).textTheme;
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
 
-  showDialog(
-    context: context,
-    builder: (context) => Dialog(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16.0),
-      ),
-      elevation: 4,
-      child: Container(
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          color: colorScheme.surface,
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Row(
-              children: [
-                Icon(Icons.notifications_active_outlined,
-                    color: colorScheme.primary, size: 28),
-                const SizedBox(width: 12),
-                Text(
-                  'Notificaciones',
-                  style: textTheme.headlineSmall?.copyWith(
+    showDialog(
+      context: context,
+      builder: (context) => Dialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16.0),
+        ), // Paréntesis faltante aquí
+        elevation: 4,
+        child: Container(
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: colorScheme.surface,
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Row(
+                children: [
+                  Icon(Icons.notifications_active_outlined,
+                      color: colorScheme.primary, size: 28),
+                  const SizedBox(width: 12),
+                  Text(
+                    'Notificaciones',
+                    style: textTheme.headlineSmall?.copyWith(
+                      fontWeight: FontWeight.w600,
+                      color: colorScheme.onSurface,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'Tienes ${notifications.length} notificaciones nuevas',
+                style: textTheme.bodyMedium?.copyWith(
+                  color: colorScheme.onSurface.withOpacity(0.8),
+                ),
+              ),
+              const SizedBox(height: 20),
+              ConstrainedBox(
+                constraints: BoxConstraints(
+                  maxHeight: MediaQuery.of(context).size.height * 0.5,
+                ),
+                child: ListView.separated(
+                  shrinkWrap: true,
+                  itemCount: notifications.length,
+                  separatorBuilder: (context, index) => const Divider(height: 16),
+                  itemBuilder: (context, index) {
+                    final notification = notifications[index];
+                    final isSystemNotification = 
+                        notification.idVentaIntermediada == null;
+
+                    return GestureDetector(
+                      onTap: () {
+                        if (!isSystemNotification) {
+                          Navigator.pop(context);
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => SolicitudCanjePage(
+                                idTecnico: widget.tecnico.idTecnico,
+                                idVentaIntermediada: notification.idVentaIntermediada,
+                              ),
+                            ),
+                          );
+                        }
+                      },
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: isSystemNotification
+                              ? colorScheme.primary.withOpacity(0.1)
+                              : colorScheme.surface,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        padding: const EdgeInsets.all(12),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                color: isSystemNotification
+                                    ? colorScheme.primary
+                                    : colorScheme.secondary,
+                                shape: BoxShape.circle,
+                              ),
+                              child: Icon(
+                                isSystemNotification
+                                    ? Icons.verified_user_outlined
+                                    : Icons.local_offer_outlined,
+                                color: Colors.white,
+                                size: 20,
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    notification.description,
+                                    style: textTheme.bodyMedium?.copyWith(
+                                      fontWeight: FontWeight.w500,
+                                      color: colorScheme.onSurface,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    DateFormat('EEE, d MMM yyyy · HH:mm', 'es_ES')
+                                        .format(notification.createdAt),
+                                    style: textTheme.bodySmall?.copyWith(
+                                      color: colorScheme.onSurface.withOpacity(0.6),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+              const SizedBox(height: 24),
+              ElevatedButton(
+                onPressed: () => Navigator.pop(context),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: colorScheme.primary,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                ),
+                child: Text(
+                  'Cerrar',
+                  style: textTheme.bodyLarge?.copyWith(
+                    color: colorScheme.onPrimary,
                     fontWeight: FontWeight.w600,
-                    color: colorScheme.onSurface,
                   ),
                 ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'Tienes ${notifications.length} notificaciones nuevas',
-              style: textTheme.bodyMedium?.copyWith(
-                color: colorScheme.onSurface.withOpacity(0.8),
               ),
-            ),
-            const SizedBox(height: 20),
-            ConstrainedBox(
-              constraints: BoxConstraints(
-                maxHeight: MediaQuery.of(context).size.height * 0.5,
-              ),
-              child: ListView.separated(
-                shrinkWrap: true,
-                itemCount: notifications.length,
-                separatorBuilder: (context, index) => const Divider(height: 16),
-                itemBuilder: (context, index) {
-                  final notification = notifications[index];
-                  final isSystemNotification = 
-                      notification.idVentaIntermediada == null;
-
-                  return Container(
-                    decoration: BoxDecoration(
-                      color: isSystemNotification
-                          ? colorScheme.primary.withOpacity(0.1)
-                          : colorScheme.surface,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    padding: const EdgeInsets.all(12),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            color: isSystemNotification
-                                ? colorScheme.primary
-                                : colorScheme.secondary,
-                            shape: BoxShape.circle,
-                          ),
-                          child: Icon(
-                            isSystemNotification
-                                ? Icons.verified_user_outlined
-                                : Icons.local_offer_outlined,
-                            color: Colors.white,
-                            size: 20,
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                notification.description,
-                                style: textTheme.bodyMedium?.copyWith(
-                                  fontWeight: FontWeight.w500,
-                                  color: colorScheme.onSurface,
-                                ),
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                DateFormat('EEE, d MMM yyyy · HH:mm', 'es_ES').format(notification.createdAt),
-                                style: textTheme.bodySmall?.copyWith(
-                                  color: colorScheme.onSurface.withOpacity(0.6),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-                },
-              ),
-            ),
-            const SizedBox(height: 24),
-            ElevatedButton(
-              onPressed: () => Navigator.pop(context),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: colorScheme.primary,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                padding: const EdgeInsets.symmetric(vertical: 16),
-              ),
-              child: Text(
-                'Cerrar',
-                style: textTheme.bodyLarge?.copyWith(
-                  color: colorScheme.onPrimary,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
-    ),
-  );
-}
-
+    );
+  }
 
   void _checkBirthday() {
-  final currentDate = DateTime.now().subtract(Duration(
-    hours: DateTime.now().timeZoneOffset.inHours + 5,
-  ));
-  DateTime birthDate = DateTime.parse(widget.tecnico.fechaNacimientoTecnico!);
+    final now = DateTime.now();
+    final birthDate = DateTime.parse(widget.tecnico.fechaNacimientoTecnico!);
 
-  if (currentDate.month == birthDate.month &&
-      currentDate.day == birthDate.day) {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      setState(() {
-        backgroundImage = 'assets/others/fondo_cumpleaños.jpg';
+    if (now.month == birthDate.month && now.day == birthDate.day) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        setState(() => backgroundImage = 'assets/others/fondo_cumpleaños.jpg');
+        _showBirthdayMessage();
       });
-      _showBirthdayMessage();
-      Future.delayed(const Duration(milliseconds: 300), _loadNotifications);
-    });
-  } else {
-    _loadNotifications();
+    }
+    _loadNotifications(); // Siempre cargar notificaciones
   }
-}
 
   void _showBirthdayMessage() {
     ScaffoldMessenger.of(context).showSnackBar(
@@ -403,6 +497,10 @@ void _showMultipleNotifications(List<TecnicoNotification> notifications) {
     await removeApiKey();
     ScaffoldMessenger.of(context).clearSnackBars(); 
 
+    // Resetear el estado de notificaciones
+    _notificationBloc.notifications.clear();
+    if (mounted) setState(() {});
+
     Navigator.pushAndRemoveUntil(
       context,
       MaterialPageRoute(builder: (context) => const HomePage()),
@@ -414,21 +512,24 @@ void _showMultipleNotifications(List<TecnicoNotification> notifications) {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        automaticallyImplyLeading: false,
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        title: Text(
-          'Bienvenido, ${widget.tecnico.nombreTecnico}',
-          style: const TextStyle(
-              fontWeight: FontWeight.bold, color: Colors.white),
+      automaticallyImplyLeading: false,
+      backgroundColor: Colors.transparent,
+      elevation: 0,
+      title: Text(
+        'Bienvenido, ${widget.tecnico.nombreTecnico}',
+        style: const TextStyle(
+          fontWeight: FontWeight.bold, 
+          color: Colors.white
         ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.logout, color: Colors.white),
-            onPressed: () => _logout(context),
-          ),
-        ],
       ),
+      actions: [
+        _buildNotificationIcon(), // Icono de notificaciones
+        IconButton(
+          icon: const Icon(Icons.logout, color: Colors.white),
+          onPressed: () => _logout(context),
+        ),
+      ],
+    ),
       extendBodyBehindAppBar: true,
       body: Container(
         decoration: BoxDecoration(

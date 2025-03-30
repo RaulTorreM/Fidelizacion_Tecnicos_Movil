@@ -14,8 +14,9 @@ import 'verSolicitudesCanje_page.dart';
 
 class SolicitudCanjePage extends StatefulWidget {
   final String idTecnico;
+  final String? idVentaIntermediada;
 
-  const SolicitudCanjePage({Key? key, required this.idTecnico}) : super(key: key);
+  const SolicitudCanjePage({Key? key, required this.idTecnico,this.idVentaIntermediada}) : super(key: key);
 
   @override
   _SolicitudCanjePageState createState() => _SolicitudCanjePageState();
@@ -56,7 +57,44 @@ class _SolicitudCanjePageState extends State<SolicitudCanjePage> {
 
   Future<List<VentaIntermediada>> _fetchVentas() async {
     List<VentaIntermediada> ventas = await _apiService.getVentasIntermediadasSolicitudes(widget.idTecnico);
-    return ventas.where((venta) => venta.idEstadoVenta == 1 || venta.idEstadoVenta == 2).toList();
+    ventas = ventas.where((venta) => venta.idEstadoVenta == 1 || venta.idEstadoVenta == 2).toList();
+
+    if (widget.idVentaIntermediada != null && mounted) {
+      final ventaSeleccionada = ventas.firstWhere(
+        (v) => v.idVentaIntermediada == widget.idVentaIntermediada,
+        orElse: () => VentaIntermediada(
+          idVentaIntermediada: '',
+          idTecnico: '',
+          nombreTecnico: '',
+          tipoCodigoCliente_VentaIntermediada: '',
+          codigoCliente_VentaIntermediada: '',
+          nombreCliente_VentaIntermediada: '',
+          fechaHoraEmision_VentaIntermediada: '',
+          fechaHoraCargada_VentaIntermediada: '',
+          montoTotal_VentaIntermediada: 0.0,
+          puntosGanados_VentaIntermediada: 0,
+          puntosActuales_VentaIntermediada: 0,
+          idEstadoVenta: 0,
+          estado_nombre: null,
+          created_at: null,
+          updated_at: null,
+          deleted_at: null,
+        ),
+      );
+      
+      if (ventaSeleccionada.idVentaIntermediada.isNotEmpty) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) {
+            setState(() {
+              _selectedVenta = ventaSeleccionada;
+              _comprobanteController.text = ventaSeleccionada.idVentaIntermediada;
+            });
+          }
+        });
+      }
+    }
+    
+    return ventas;
   }
 
   String obtenerNumeroSolicitud(String idSolicitudCanje) {

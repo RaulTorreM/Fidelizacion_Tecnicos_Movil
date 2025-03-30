@@ -4,6 +4,7 @@ import 'ui/screens/home_page.dart';
 import 'logic/recompensa_bloc.dart';
 import 'logic/login_bloc.dart';
 import 'logic/profile_bloc.dart';
+import 'logic/notification_bloc.dart';
 import 'logic/venta_intermediada_bloc.dart';  // Corregido el nombre del archivo
 import 'data/repositories/perfil_repository.dart';
 import 'data/repositories/notification_repository.dart';
@@ -36,6 +37,14 @@ class MyApp extends StatelessWidget {
         Provider<ApiService>(
           create: (context) => DioInstance().getApiService(),
         ),
+
+        ChangeNotifierProvider<NotificationBloc>(
+        create: (context) => NotificationBloc(
+          NotificationRepository(
+            Provider.of<ApiService>(context, listen: false)
+          )
+        ),
+      ),
 
         // Proveedor para NotificationRepository
         Provider<NotificationRepository>(
